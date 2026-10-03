@@ -1,6 +1,6 @@
 % !TeX program = xelatex
 % UTF-8. Build twice with XeLaTeX. No shell escape or external assets required.
-% Version 0.1-draft. SPEC-GATE: PASS (2026-10-02). Baseline not approved.
+% Version 0.1. SPEC-GATE: PASS (2026-10-02). Baseline APPROVED by Yana Abramenko (2026-10-03).
 \documentclass[11pt,a4paper]{article}
 \usepackage[margin=22mm]{geometry}
 \usepackage{fontspec}
@@ -20,7 +20,7 @@
 \usepackage{needspace}
 \usepackage{fancyhdr}
 \usepackage[unicode,hidelinks]{hyperref}
-\hypersetup{pdftitle={Ветеринарна клініка — SRS 0.1 draft},pdfauthor={Абраменко Яна},pdfsubject={SPEC-GATE: PASS; baseline не затверджена}}
+\hypersetup{pdftitle={Ветеринарна клініка — SRS 0.1},pdfauthor={Абраменко Яна},pdfsubject={SPEC-GATE: PASS; baseline затверджена людиною 03.10.2026}}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{5pt}
 \setlength{\tabcolsep}{4pt}
@@ -30,8 +30,8 @@
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\small Ветеринарна клініка}
-\fancyhead[R]{\small SRS 0.1-draft}
-\fancyfoot[L]{\small Чернетка — SPEC-GATE: PASS}
+\fancyhead[R]{\small SRS 0.1}
+\fancyfoot[L]{\small Затверджена baseline — SPEC-GATE: PASS}
 \fancyfoot[R]{\thepage}
 \setlength{\headheight}{15pt}
 \renewcommand{\headrulewidth}{0.3pt}
@@ -59,11 +59,11 @@
 {\large Проектування інформаційних систем\par}
 \vspace{12mm}
 Абраменко Яна\par
-Версія 0.1-draft\par
+Версія 0.1\par
 28 вересня 2026 року\par
 \vfill
-\textbf{Статус: чернетка після SKED}\par
-Повторний SPEC-GATE: PASS (02.10.2026). Базову специфікацію не затверджено.\par
+\textbf{Статус: затверджена базова специфікація}\par
+SPEC-GATE: PASS (02.10.2026). Baseline затверджена Абраменко Яною 03.10.2026 для подальшого SDD-циклу.\par
 \vspace{8mm}
 \begin{minipage}{0.94\textwidth}
 Документ формалізує рішення поетапного діалогу щодо однієї ветеринарної клініки.
@@ -85,14 +85,14 @@
 \bottomrule
 \endfoot
 Назва системи & Інформаційна система ветеринарної клініки \\
-Версія і статус & 0.1-draft; DRAFT; SPEC-GATE: PASS; baseline не затверджена \\
+Версія і статус & 0.1; APPROVED; SPEC-GATE: PASS; baseline затверджена людиною 03.10.2026 \\
 Підстава & ЛР1, погоджений SKED-діалог і завдання ЛР2 \\
 Власниця рішень & Абраменко Яна \\
 Мова документа й інтерфейсу & Українська \\
 Методологія & SDD; обов’язковий TDD для функціональних змін \\
 Цільове використання & Реальна мала клініка; також навчальна демонстрація \\
-Файл базової специфікації & spec/SRS\_Vet\_Clinic\_v0.1-draft.tex \\
-Затвердження та коміт & Не виконані; цей файл не є записом APPROVED \\
+Файл базової специфікації & spec/SRS\_Vet\_Clinic\_v0.1.tex \\
+Затвердження та коміт & Baseline затверджена Абраменко Яною 03.10.2026 після SPEC-GATE: PASS; коміт затвердження ще не створено \\
 \end{longtable}
 
 У цьому документі слова «повинна» та «повинен» визначають перевірювану поведінку чернетки. Усі вимоги походять із погоджених рішень; конкретизації, яких діалог не встановив, наведені в OPEN та DEP. Вони не є мовчазним дозволом агенту обрати суттєву поведінку. Структуру адаптовано за ULLANA; предметну область, стек і предметні обмеження прикладів не перенесено.
@@ -764,6 +764,6 @@ OPEN-008 & Граничні права історичного відновлен
 \end{longtable}
 
 \section{Статус наступного кроку}
-Ця поставка є чернеткою 0.1-draft. Повторний SPEC-GATE від 02.10.2026 має результат PASS; усі блокуючі зауваження SG-B01–SG-B11 закриті. Запис APPROVED і коміт затвердженої базової специфікації не створювалися. Наступний крок — подання документа на людське затвердження baseline.
+Ця поставка є затвердженою baseline версії 0.1 для подальшого SDD-циклу. SPEC-GATE від 02.10.2026 має результат PASS; усі блокуючі зауваження SG-B01–SG-B11 закриті. Абраменко Яна явно затвердила поточну специфікацію 03.10.2026. Коміт затвердженої базової специфікації ще не створено.
 
 \end{document}
