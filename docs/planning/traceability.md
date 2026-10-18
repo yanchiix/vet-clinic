@@ -71,12 +71,12 @@ Local ticket IDs and GitHub issue numbers are both shown. RELEASE-GATE G04 (#25)
 | REQ-F-059 | AC-F-059 | BDD-041, BDD-042 | T04 (#7), F05 (#12), VAL01 (#22), G03 (#24) |
 | REQ-F-060 | AC-F-060 | BDD-042 | T04 (#7), F05 (#12), VAL01 (#22), G03 (#24) |
 | REQ-F-061 | AC-F-061 | BDD-043 | T04 (#7), F05 (#12), VAL01 (#22), G03 (#24) |
-| REQ-F-062 | AC-F-062 | BDD-043 | T04 (#7), F05 (#12), T03 (#6), F06 (#13), VAL01 (#22), G03 (#24) |
+| REQ-F-062 | AC-F-062 | BDD-043 | A01 (#2), T04 (#7), F05 (#12), T03 (#6), F06 (#13), VAL01 (#22), G03 (#24) |
 | REQ-F-063 | AC-F-063 | BDD-037 | T04 (#7), F05 (#12), VAL01 (#22), G03 (#24) |
 | REQ-F-064 | AC-F-064 | BDD-037 | T03 (#6), F06 (#13), VAL01 (#22), G03 (#24) |
 | REQ-F-065 | AC-F-065 | BDD-044 | T03 (#6), F06 (#13), VAL01 (#22) |
 | REQ-F-066 | AC-F-066 | BDD-045 | T03 (#6), F06 (#13), VAL01 (#22), G03 (#24) |
-| REQ-F-067 | AC-F-067 | BDD-046 | T03 (#6), F06 (#13), VAL01 (#22), G03 (#24) |
+| REQ-F-067 | AC-F-067 | BDD-046 | A01 (#2), T03 (#6), F06 (#13), VAL01 (#22), G03 (#24) |
 | REQ-F-068 | AC-F-068 | BDD-046, BDD-047 | T03 (#6), F06 (#13), VAL01 (#22), G03 (#24) |
 | REQ-F-069 | AC-F-069 | BDD-046, BDD-048 | T03 (#6), F06 (#13), VAL01 (#22), G03 (#24) |
 | REQ-F-070 | AC-F-070 | BDD-032, BDD-034, BDD-047 | T03 (#6), F06 (#13), VAL01 (#22), G03 (#24) |
@@ -103,13 +103,13 @@ Local ticket IDs and GitHub issue numbers are both shown. RELEASE-GATE G04 (#25)
 | REQ-DP-002 | AC-DP-002 | — | T01 (#4), T02 (#5), T03 (#6), T04 (#7), V02 (#21) |
 | REQ-DP-003 | AC-DP-003 | — | T01 (#4), T02 (#5), T03 (#6), T04 (#7), D01 (#18), V02 (#21) |
 | REQ-DP-004 | AC-DP-004 | — | D01 (#18), V02 (#21) |
-| REQ-DP-005 | AC-DP-005 | — | S01 (#1), A01 (#2), D02 (#19), V02 (#21), G02 (#23) |
+| REQ-DP-005 | AC-DP-005 | — | S01 (#1), A01 (#2), D01 (#18), D02 (#19), V02 (#21), G02 (#23) |
 | REQ-DP-006 | AC-DP-006 | — | G01 (#3), D01 (#18), V02 (#21) |
 
 ## Planning verification
 
 - Total requirements from the approved baseline: **95**.
 - Every requirement has at least one mapped Lab 3 ticket.
-- ADD-001 is applied through A01 (#2), T03 (#6), F06 (#13), and the unchanged baseline identifiers REQ-F-062 / REQ-F-067 / AC-F-067 / BDD-046.
+- ADD-001 is applied through A01 (#2), T03 (#6), F06 (#13), G03 (#24), and the unchanged baseline identifiers REQ-F-062 / REQ-F-067 / AC-F-067 / BDD-046.
 - G02 PLAN-GATE (#23) is not passed by this file alone; it also requires the completed D02 planning package and human GO/REVISE decision.
 - G04 RELEASE-GATE (#25) is a release-wide control point and is not duplicated in all 95 rows.

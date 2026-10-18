@@ -2,9 +2,9 @@
 
 ## 1. Статус документа
 
-Документ є пакетом планування D02 для лабораторної роботи №3. Він пройшов Human Review перед підготовкою до PLAN-GATE G02.
+Пакет D02 підготовлено, технічно перевірено та передано на фінальний Human Review. Human approval D02 і рішення G02: GO / REVISE ще не зафіксовані.
 
-Затвердження D02 не означає рішення G02: GO. Рішення G02, G03 і G04 приймає лише Human у відповідних Gate.
+Майбутнє затвердження D02 не означатиме автоматичного рішення G02: GO. Рішення G02, G03 і G04 приймає лише Human у відповідних Gate.
 
 Workflow тікетів:
 
@@ -33,7 +33,7 @@ Workflow тікетів:
 - DEP-001–005;
 - повні актуальні описи GitHub Issues #1–#25;
 - вимоги ЛР3 до плану, Gantt, критичного шляху, людських дій і ризиків;
-- `docs/planning/traceability.md`, commit `f04fd2efe1c1543575516f8fede3a186ee5b65cd`.
+- `docs/planning/traceability.md` із цього самого підготовленого пакета планових документів у робочому дереві, базованому на HEAD `10e051b0bc945a56e69a16b5539860d1014c13a6`.
 
 Повна матриця REQ → AC → BDD → Ticket ID міститься в `docs/planning/traceability.md` і тут не дублюється.
 
@@ -65,7 +65,7 @@ Workflow тікетів:
 
 | Етап | Основні Ticket ID | Результат / milestone |
 |---|---|---|
-| Planning | D02, планова частина V02, D01 | Human затвердив пакет D02; планова матриця містить Ticket ID |
+| Planning | D02, планова частина V02, D01 | Пакет D02 і матрицю з Ticket ID підготовлено до фінального Human Review; Human approval є умовою завершення етапу |
 | PLAN-GATE | G02 | Human decision; базовий сценарій продовжується лише за умовного G02: GO |
 | Access | T01, F01, F02 | Локально перевірені authentication, sessions, client/staff access |
 | Profiles / pets | T02, F03, F07 | Картки, пропозиції змін, стани тварини та їхні наслідки |
@@ -143,8 +143,8 @@ Workflow тікетів:
 |---|---|---|---|
 | INT-AUTH | Клієнтський і робочий доступ, сеанси, серверні права, прямі запити та SMS-стани | R-F01, R-F23, R-F678; DEP-005; DEP-002 для реального SMS | Security/access evidence для G03 і V01 |
 | INT-PET | Картки, пропозиції змін, смерть, припинення опіки та їхні наслідки | R-F23, R-F45, R-F678 | Докази T02/T03 щодо критичних станів |
-| INT-APPT | Розклад, конкурентне бронювання, статуси, рекомендації та зв’язок із записом; основний прогін чотирьох сценаріїв ADD-001 | R-F01, R-F45, R-F678; доступні результати F05/F06 | Докази T03, REQ-F-067–072 і ADD-001 для G03 |
-| INT-MED | Медичний доступ, авторство, версії, вкладення, процедури й опис проведеного прийому | R-F01, R-F23, R-F45, R-F678 | Докази T04; використовує ADD-001 evidence з INT-APPT для зв’язку з процедурами без повторного прогону |
+| INT-APPT | Розклад, конкурентне бронювання, статуси, рекомендації та зв’язок із записом; запланований основний прогін чотирьох сценаріїв ADD-001 | R-F01, R-F45, R-F678; доступні результати F05/F06 | Докази T03, REQ-F-067–072 і ADD-001 для G03 |
+| INT-MED | Медичний доступ, авторство, версії, вкладення, процедури й опис проведеного прийому | R-F01, R-F23, R-F45, R-F678 | Заплановані докази T04; надалі використовуватиме ADD-001 evidence з INT-APPT без повторного прогону |
 | INT-OPS | Платформи, performance, SMS/email, backup і restore | R-F23, R-F45, R-F910; DEP-001–003; `BK-168H` | Експлуатаційні протоколи V01 |
 
 Методики інтеграційної перевірки:
@@ -186,16 +186,16 @@ REQ-NF-008 задає сім календарних діб зберігання.
 
 ## 11. Базовий Gantt
 
-Інтервали подано як `[початок; кінець)`. Milestone має нульову тривалість.
+Інтервали подано як `[початок; кінець)`. Правий край роботи локального Green або Human decision window є відповідною контрольною точкою.
 
 | ID роботи | Ресурс | Початок | Кінець | Тривалість / effort | Залежності або результат |
 |---|---|---:|---:|---:|---|
 | P1 | Agent | 0 | 3 | 18 год | Первинний D02 |
 | R-D02-1 | Human | 3 | 3,5 | 1,5 год | Review первинного D02 |
 | D02-FIX | Agent | 3,5 | 4 | 3 год | Виправлений D02 |
-| R-D02-2 | Human | 4 | 4,5 | 1,5 год | Затвердження виправленого D02 |
-| G02-PREP | Agent | 4,5 | 5 | 3 год | D02 approved; планова V02 |
-| G02 | Human | 5 | 6 | 3 год | Milestone: умовний G02 GO базового сценарію |
+| R-D02-2 | Human | 4 | 4,5 | 1,5 год | Фінальний Human Review виправленого D02 |
+| G02-PREP | Agent | 4,5 | 5 | 3 год | Лише після Human approval D02; планова частина V02 |
+| G02 | Human | 5 | 6 | 3 год | Вікно Human-рішення; умовний G02 GO лише в базовому сценарії |
 | F01-LG | Agent | 6 | 8,5 | 15 год | Локальний Green F01 |
 | R-F01 | Human | 8,5 | 9 | 1,5 год | Review механізмів доступу |
 | F02-LG | Agent | 8,5 | 10,25 | 10,5 год | Механізми F01 доступні |
@@ -212,24 +212,83 @@ REQ-NF-008 задає сім календарних діб зберігання.
 | F10-LG | Agent | 24,5 | 26,5 | 12 год | Доступні основні потоки |
 | R-F910 | Human | 26,5 | 27,5 | 3 год | Review F09/F10 |
 | INT-AUTH | Agent | 26,5 | 28 | 9 год | R-F01, R-F23, R-F678; DEP-005 |
-| INT-APPT | Agent | 28 | 30,5 | 15 год | R-F01, R-F45, R-F678; основний прогін чотирьох сценаріїв ADD-001 |
-| INT-MED | Agent | 30,5 | 32,5 | 12 год | R-F01, R-F23, R-F45, R-F678; використовує ADD-001 evidence |
+| INT-APPT | Agent | 28 | 30,5 | 15 год | R-F01, R-F45, R-F678; запланований основний прогін чотирьох сценаріїв ADD-001 |
+| INT-MED | Agent | 30,5 | 32,5 | 12 год | R-F01, R-F23, R-F45, R-F678; надалі використовуватиме ADD-001 evidence з INT-APPT |
 | INT-PET | Agent | 32,5 | 34 | 9 год | R-F23, R-F45, R-F678 |
 | G03-PREP | Agent | 34 | 35 | 6 год | INT-AUTH, INT-PET, INT-APPT, INT-MED; пакет T01–T04/V01/D01 |
-| G03 | Human | 35 | 36 | 3 год | Milestone: умовний G03 GO базового сценарію |
+| G03 | Human | 35 | 36 | 3 год | Вікно Human-рішення; умовний G03 GO лише в базовому сценарії |
 | INT-OPS | Agent | 35 | 36,5 | 9 год | R-F23, R-F45, R-F910; DEP-001–003; `BK-168H` |
 | V02-PRE | Agent | 36,5 | 37 | 3 год | Умовний G03 GO; завершені всі INT-роботи |
-| VAL-EXEC | Human | 37 | 39 | 6 год | Людське виконання сценаріїв |
+| VAL-EXEC | Human | 37 | 39 | 6 год | Заплановане Human виконання validation-сценаріїв |
 | VAL-SUPPORT | Agent | 37 | 38 | 6 год | Технічна підтримка validation |
 | EVID-PRE | Agent | 38 | 39 | 6 год | Підготовка зауважень і доказів |
 | VAL-FIX | Agent | 39 | 41 | 12 год | Завершені VAL-EXEC і гілка VAL-SUPPORT → EVID-PRE |
-| VAL-ACCEPT | Human | 41 | 42 | 3 год | Milestone VAL01: accepted |
+| VAL-ACCEPT | Human | 41 | 42 | 3 год | Заплановане Human acceptance VAL01 |
 | FINAL-CONS | Agent | 42 | 43,5 | 9 год | Фінальні V01/V02/D01 |
 | R-FINAL | Human | 43,5 | 44,5 | 3 год | Review фінальних протоколів |
 | G04-PREP | Agent | 44,5 | 45 | 3 год | Release package |
-| G04 | Human | 45 | 46 | 3 год | Milestone: умовний G04 GO базового сценарію |
+| G04 | Human | 45 | 46 | 3 год | Вікно Human-рішення; умовний G04 GO лише в базовому сценарії |
 
 Календарна контрольна точка `BK-168H` не має Agent effort і не має визначеного відносного дня без календарної прив’язки. Для чинності таблиці вона повинна настати до моменту початку INT-OPS.
+
+### 11.1. Графічна діаграма Ганта
+
+Mermaid Gantt потребує календарної осі, тому нижче використано **умовну** дату відліку `2000-01-01 00:00 = D0`. Одна календарна доба на цій осі дорівнює одному відносному робочому дню моделі; `D0,25 = +6 год`, `D0,5 = +12 год`, `D0,75 = +18 год`. Ці позначки не є реальними календарними датами й не описують фактичну доступність Agent або Human. Тривалості в діаграмі показують інтервали розкладу, а трудовитрати залишаються в числовій таблиці.
+
+```mermaid
+gantt
+    title D02 — базовий сценарій, D0–D46 (умовна вісь)
+    dateFormat YYYY-MM-DD HH:mm
+    axisFormat %d.%m
+
+    section Planning / PLAN-GATE
+    P1 [Agent]                         :crit, p1, 2000-01-01 00:00, 72h
+    R-D02-1 [Human Review]             :crit, rd021, after p1, 12h
+    D02-FIX [Agent]                    :crit, d02fix, after rd021, 12h
+    R-D02-2 [Human Review]             :crit, rd022, after d02fix, 12h
+    G02-PREP [Agent]                   :crit, g02prep, after rd022, 12h
+    G02 [Human assumed GO]            :crit, g02, after g02prep, 24h
+
+    section Local Green / implementation
+    F01-LG [Agent]                     :crit, f01, after g02, 60h
+    R-F01 [Human Review]               :rf01, after f01, 12h
+    F02-LG [Agent]                     :crit, f02, after f01, 42h
+    F03-LG [Agent]                     :crit, f03, after f02, 54h
+    R-F23 [Human Review]               :rf23, after f03, 24h
+    F04-LG [Agent]                     :crit, f04, after f03, 60h
+    F05-LG [Agent]                     :crit, f05, after f04, 72h
+    R-F45 [Human Review]               :rf45, after f05, 24h
+    F06-LG [Agent]                     :crit, f06, after f05, 36h
+    F07-LG [Agent]                     :crit, f07, after f06, 36h
+    F08-LG [Agent]                     :crit, f08, after f07, 48h
+    R-F678 [Human Review]              :rf678, after f08, 24h
+    F09-LG [Agent]                     :crit, f09, after f08, 36h
+    F10-LG [Agent]                     :crit, f10, after f09, 48h
+    R-F910 [Human Review]              :rf910, after f10, 24h
+
+    section Integration / integrity gate
+    INT-AUTH [Agent]                   :crit, intauth, after f10, 36h
+    INT-APPT [Agent ADD-001 planned]  :crit, intappt, after intauth, 60h
+    INT-MED [Agent]                    :crit, intmed, after intappt, 48h
+    INT-PET [Agent]                    :crit, intpet, after intmed, 36h
+    G03-PREP [Agent]                   :crit, g03prep, after intpet, 24h
+    G03 [Human assumed GO]            :crit, g03, after g03prep, 24h
+    INT-OPS [Agent BK-168H required]  :crit, intops, after g03prep, 36h
+    V02-PRE [Agent]                    :crit, v02pre, after g03 intops, 12h
+
+    section Validation / release gate
+    VAL-EXEC [Human]                   :crit, valexec, after v02pre, 48h
+    VAL-SUPPORT [Agent]                :crit, valsupport, after v02pre, 24h
+    EVID-PRE [Agent]                   :crit, evidpre, after valsupport, 24h
+    VAL-FIX [Agent]                    :crit, valfix, after valexec evidpre, 48h
+    VAL-ACCEPT [Human]                 :crit, valaccept, after valfix, 24h
+    FINAL-CONS [Agent]                 :crit, finalcons, after valaccept, 36h
+    R-FINAL [Human Review]             :crit, rfinal, after finalcons, 24h
+    G04-PREP [Agent]                   :crit, g04prep, after rfinal, 12h
+    G04 [Human assumed GO]            :crit, g04, after g04prep, 24h
+```
+
+Правий край кожної роботи `Fxx-LG` є milestone локального Green. Праві краї G02, G03, VAL-ACCEPT і G04 є контрольними точками відповідного Human-рішення; `assumed GO` — лише припущення базового сценарію. Позначка `crit` показує resource-constrained sequence цього конкретного розкладу й не є доказом математичної оптимальності. Паралельність явно показана для Review/наступної Agent-роботи, G03/INT-OPS і гілок `VAL-EXEC` та `VAL-SUPPORT → EVID-PRE`.
 
 ## 12. Перекриття робіт
 
@@ -281,8 +340,8 @@ REQ-NF-008 задає сім календарних діб зберігання.
 
 - INT-AUTH;
 - INT-PET;
-- INT-APPT, включно з основним прогоном чотирьох сценаріїв ADD-001;
-- INT-MED, який використовує результати ADD-001 без повторного прогону;
+- INT-APPT, включно із запланованим основним прогоном чотирьох сценаріїв ADD-001;
+- INT-MED, який надалі використовуватиме результати ADD-001 без повторного прогону;
 - релевантні результати T01–T04;
 - доступні протоколи V01 і записи D01;
 - докази критичних наслідків станів і статусів за REQ-F-030–033 та REQ-F-046–050;
@@ -292,7 +351,7 @@ REQ-NF-008 задає сім календарних діб зберігання.
 
 Ці критерії є плановими критеріями майбутнього Gate. Рішення G03 у Gantt є умовним GO базового сценарію. Фактичне GO / REVISE приймає Human.
 
-Формальне приведення Issue #24 до цих критеріїв потребує окремого погодженого оновлення.
+Актуальний Issue #24 формально відображає ці критерії; їхню узгодженість із матрицею повторно перевіряє планова частина V02.
 
 ## 15. Resource-constrained sequence
 
