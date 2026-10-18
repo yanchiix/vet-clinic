@@ -4,7 +4,7 @@
 
 **Дата останнього зафіксованого етапу:** 18.10.2026
 
-**Поточний стан:** пакет планування реалізації D02 підготовлено й схвалено Human у робочому діалозі; формальне рішення G02 `GO / REVISE` ще не прийнято
+**Поточний стан:** попередню редакцію D02 схвалено Human і закрито; повторний незалежний аудит рекомендував технічне `GO`; фінальні виправлення R01/R02 підготовлено до Human Review. Нова редакція D02 ще не схвалена, формальне рішення G02 `GO / REVISE` ще не прийнято
 
 ## 1. Призначення журналу
 
@@ -19,7 +19,7 @@
 | Етап | Фактичний стан | Основний результат | Наступна контрольна точка |
 |---|---|---|---|
 | Аналіз і специфікація вимог | Завершено для baseline SRS v0.1 та ADD-001 | Затверджена SRS, історичний SPEC-GATE G01, ADD-001 без зміни стабільних REQ/AC/BDD | Використовувати baseline як межу подальших рішень |
-| Планування реалізації | Пакет D02 підготовлено, технічно перевірено та схвалено Human у робочому діалозі | 25 Issues, traceability matrix, implementation plan, Gantt, risk register, planning audit V02 | Формальний запис Human у D02 #19; окреме рішення G02 `GO / REVISE` |
+| Планування реалізації | Попередню D02 схвалено й закрито; повторний аудит рекомендував технічне `GO`; нова редакція з виправленнями R01/R02 очікує Human Review | 25 Issues, traceability matrix, implementation plan, Gantt, risk register, V02 і докази двох незалежних аудитів G02 | Прийняття нової D02 та окреме рішення Human у G02 `GO / REVISE` |
 | Розробка та тестування | Не розпочато | Немає реалізаційних commit, Red/Green або integration evidence | Може початися лише після дозволеного переходу через G02 та готовності відповідних DEP |
 | Валідація та підготовка до випуску | Не розпочато | VAL01, фінальний V02, G03/G04 evidence відсутні як виконані результати | Майбутні Human Review, G03, VAL01 і G04 за планом та фактичними доказами |
 
@@ -34,6 +34,9 @@
 - [план реалізації](../docs/planning/implementation-plan.md);
 - [реєстр ризиків](../docs/planning/risk-register.md);
 - [повторний аудит планової частини V02](../docs/planning/v02-planning-audit.md);
+- [PLAN-GATE journal](plan-gate.md);
+- [незалежний аудит G02](../audits/g02-initial/report.md);
+- [повторний незалежний аудит G02](../audits/g02-repeat/report.md);
 - [Issue #18 — D01](https://github.com/yanchiix/vet-clinic/issues/18).
 
 Дати комітів наведено за Git history у часовому поясі `+03:00`. Для GitHub Issues збережено фактичні UTC timestamps там, де вони потрібні як доказ. Якщо точного часу Human-рішення немає, журнал подає лише достовірну дату й прямо позначає обмеження доказу.
@@ -60,6 +63,19 @@
 | 18.10.2026 | Human — рішення щодо scope виправлень; Agent — точкові зміни й повторна перевірка | Human погодив V02-PA-01–05. Agent змінив лише погоджені зв’язки й формулювання, додав Mermaid Gantt і повторив перевірки. | PA-01–05 опрацьовано. Підтверджено 95/95 REQ, незмінність AC/BDD, двосторонню простежуваність, ADD-001/G03, відсутність dependency cycles і нової функціональності. | [V02 planning audit](../docs/planning/v02-planning-audit.md); [G03 #24](https://github.com/yanchiix/vet-clinic/issues/24); commit [`d69899d`](https://github.com/yanchiix/vet-clinic/commit/d69899d51caa076dbf2bf835274897cb3992fe5c). |
 | 18.10.2026 | Agent — технічна перевірка; Human — фінальний Review D02 | Числову таблицю Gantt зіставлено з Mermaid-діаграмою: 38 робіт, D0–D46, один Agent, окремий Human resource, паралельні G03/INT-OPS і validation-гілки. Human переглянув пакет і повідомив `APPROVE` у робочому діалозі. | D02 схвалено Human у діалозі. Рішення не є G02: GO і не змінює Issue/Project автоматично. Точний час Review у доступних доказах відсутній; достовірна дата — 18.10.2026. | [Implementation plan, розділ 11](../docs/planning/implementation-plan.md); [V02 planning audit, розділ 6](../docs/planning/v02-planning-audit.md); робочий діалог. Формальний коментар Human у [D02 #19](https://github.com/yanchiix/vet-clinic/issues/19) на момент запису не опубліковано. |
 | 18.10.2026, 12:57:52 +03:00 | Agent — commit/push після прямого дозволу Human | Перевірено HEAD, status, staging, погоджений diff і `git diff --check`; до commit включено лише чотири planning-файли. Виконано fast-forward push без force, щоб не переписати сторонні зміни. | `origin/main` і локальний HEAD оновлено до `d69899d51caa076dbf2bf835274897cb3992fe5c`. Issues, Project statuses і Gate-рішення не змінювалися. | Commit [`d69899d`](https://github.com/yanchiix/vet-clinic/commit/d69899d51caa076dbf2bf835274897cb3992fe5c), `docs: resolve V02 planning audit findings`; Git history. |
+| 18.10.2026, 16:24:07 +03:00 | Agent — commit/push після Human APPROVE редакції; Human — попередній Review | Додано `logs/project-journal.md` і професійно узгоджено стиль планових документів без зміни нормативних зв’язків. | `origin/main` оновлено до `b1a6cd8608ad59f6bce5dc7c835e0178b6881a81`; до commit увійшли лише три planning-файли та журнал. | Commit [`b1a6cd8`](https://github.com/yanchiix/vet-clinic/commit/b1a6cd8608ad59f6bce5dc7c835e0178b6881a81), `docs: add project journal and polish planning documentation`. |
+| 18.10.2026, 16:31:54–16:32:00 +03:00 | Human | Human опублікував `D02: APPROVE`, передав пакет на G02 PLAN-GATE; Issue D02 #19 закрито як completed. | Approval і закриття D02 підтверджені GitHub. Це рішення не є G02: GO. | [Коментар D02 #19](https://github.com/yanchiix/vet-clinic/issues/19#issuecomment-6250515670); audit `live-state.json`. |
+| 18.10.2026 | Незалежний аудитор | Перевірено G02 checklist, baseline, 25 Issues, traceability, Gantt, ресурси й ризики на SHA `b1a6cd8`. | Рекомендація `REVISE`; блокуюча неоднозначність G02-A01 і неблокуючі G02-A02–A05. Остаточного Human-рішення G02 не прийнято. | [Звіт аудиту G02](../audits/g02-initial/report.md), [verification results](../audits/g02-initial/verification-results.json). |
+| 18.10.2026 | Agent — аналіз і виправлення; Human — майбутній повторний Review | A01–A05 перевірено за SRS, Issues і планом. Підготовлено нову уточнену TDD/D01 point estimate всередині 123 годин `Fxx-LG` і 54 годин INT; виправлено `crit` G03, Mermaid dependencies, статус D02 і межу Human/DEP effort; створено `logs/plan-gate.md`. | Base estimate залишається 246/37,5 год і 46 днів після scope-check, але її достатність ще має оцінити Human; G03 має 0,5 дня slack; 38/38 робіт узгоджені. Пакет має статус `AWAITING HUMAN DECISION`; повторного незалежного аудиту ще не було. | [Implementation plan](../docs/planning/implementation-plan.md); [PLAN-GATE journal](plan-gate.md); поточний diff і самоперевірка Agent. |
+| 18.10.2026 | Human — Review виправлень; Agent — фінальна підготовка повторного аудиту | Human визнав виправлення A01–A05 загалом обґрунтованими й передав 123/54/46 як запропоновану модель, без approval нової D02. Agent перевірив repository contents і виявив відсутність runner/config/dependencies/fixtures; додав окрему `TEST-INFRA`, перерахував графік і переніс мінімальні первинні audit evidence у стабільний каталог без зміни оригіналів. | Запропонована модель стала 258 Agent-год, 37,5 Human-год і D0–D48; 123 години `Fxx-LG` та 54 години INT збережені без включення infrastructure effort. Пакет підготовлено до повторного незалежного аудиту; G02-рішення відсутнє. | [Implementation plan](../docs/planning/implementation-plan.md); [PLAN-GATE journal](plan-gate.md); [initial audit evidence](../audits/g02-initial/report.md). |
+
+### 4.2.1. Повторний аудит і фінальні виправлення перед Human Review
+
+18.10.2026 повторний незалежний аудитор перевірив незакомічену модель на HEAD `b1a6cd8608ad59f6bce5dc7c835e0178b6881a81` і рекомендував **GO щодо технічної готовності**. A02–A05 технічно закриті; A01 має REVIEW REQUIRED через необхідність Human прийняття оцінок. Зауваження G02-R01 і G02-R02 неблокуючі. Докази: [звіт](../audits/g02-repeat/report.md), [первинні результати](../audits/g02-repeat/results.json), [скрипт](../audits/g02-repeat/check.cjs).
+
+18.10.2026 Agent за запитом Human уточнив історичні inputs та безпечне ізольоване відтворення первинного аудиту в [PLAN-GATE journal](plan-gate.md), округлив межі початку production-коду F03/F05/F09 вгору й явно зберіг фактичний зафіксований Red як обов’язкову умову. Три файли повторного аудиту скопійовано побайтово до постійного архіву; історичні докази обох аудитів не переписані. Планові оцінки, таблиця Gantt і Mermaid не змінені.
+
+Фінальна самоперевірка: 39/39 робіт, 258 Agent-год, 37,5 Human-год, D0–D48; циклів, накладень і розбіжностей немає, G03 slack 0,5 дня. Перевірено всі десять меж Tests/Red → production, суми 12/123/54 без дублювання T01–T04, локальні Markdown-посилання та `git diff --check`. Ізольований replay побайтово відтворив первинний JSON. Staging, commit, push, зміни Issues/Project і реалізація не виконувалися. Це самоперевірка виправлень, а не третій незалежний аудит. **Нова D02 та рішення G02 залишаються на Human Review.**
 
 ### 4.3. Розробка та тестування
 
@@ -112,14 +128,14 @@
 | Актуальні Issues | Прочитано всі 25; Local ID, label, state, обов’язкові розділи й нормативні ID перевірено |
 | ADD-001 | Чотири сценарії заплановано виконати в INT-APPT; INT-MED має використати evidence без повторного effort |
 | G03 | Узгоджено control access, medical-record integrity, REQ-F-030–033, REQ-F-046–050 і рекомендацій у чинному scope |
-| Gantt | 38 робіт; D0–D46; Agent 246 год; Human 37,5 год; ресурсних накладень і dependency cycles не виявлено |
+| Gantt, test infrastructure і TDD effort | Повторний незалежний аудит і фінальна самоперевірка: 39 робіт; D0–D48; Agent 258 год; Human 37,5 год; окрема `TEST-INFRA` 12 год не дублює 123 години `Fxx-LG` або 54 години INT; конфліктів і cycles немає; G03 slack — 0,5 дня. Оцінки очікують Human прийняття |
 | Git diff | Whitespace-перевірка пройдена; commit `d69899d` містить лише чотири погоджені planning-файли |
 | Нова функціональність | Не додана; OPEN-003 і OPEN-006 збережено як обмеження baseline |
 
 ## 9. Поточний стан, відкриті питання та наступні дії
 
-- **D02 (#19):** Human повідомив `APPROVE` у робочому діалозі 18.10.2026. Формальний коментар Human у GitHub ще не опубліковано; стан Issue на момент перевірки — `open`, кількість коментарів — `0`. Журнал не публікує рішення від імені Human і не змінює статус D02.
-- **G02 (#23):** рішення `GO / REVISE` **ще не прийнято**. До рішення потрібно використати погоджений пакет D02, планову частину V02 і цей процесний доказ; APPROVE D02 не підміняє PLAN-GATE.
+- **D02 (#19):** Human опублікував `APPROVE` 18.10.2026 о 16:31:54 +03:00; Issue закрито як completed о 16:32:00 +03:00. Післяаудитна редакція плану очікує повторного Human Review й не вважається автоматично прийнятою попереднім approval.
+- **G02 (#23):** перший аудит рекомендував `REVISE`, повторний — технічне `GO`; R01/R02 виправлено перед Human Review. Рішення Human `GO / REVISE` **ще не прийнято**. APPROVE попередньої D02 не підміняє прийняття нової редакції або PLAN-GATE.
 - **V02 (#21):** планова частина має технічний PASS; Issue залишається відкритим до фінального аудиту після розробки та перевірок.
 - **D01 (#18):** Issue відкритий. Журнал охоплює analysis/specification і planning; майбутні TDD, Agent actions, Human Review, validation та Gate-рішення додаються після фактичного виконання.
 - **F01–F10 і T01–T04:** відкриті, реалізація й тестування не починалися; Red/Green evidence відсутні.
@@ -140,4 +156,4 @@
 
 Для розробки й тестів додатково фіксуються очікуваний та фактичний Red, Green після реалізації й повторний Green після refactoring, якщо він був. Для Review, validation і Gate фіксуються пакет доказів, автор рішення Human і фактичний результат без автоматичного припущення.
 
-Наступні записи очікуються після фактичної події: публікації Human-коментаря D02, рішення G02, старту дозволеної Agent-роботи або появи нового підтвердженого блокера. Порожні чи прогнозні записи не створюються.
+Наступні записи очікуються після фактичної події: повторного Human Review післяаудитної редакції, рішення G02, старту дозволеної Agent-роботи або появи нового підтвердженого блокера. Порожні чи прогнозні записи не створюються.

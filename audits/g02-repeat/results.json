@@ -1,0 +1,519 @@
+{
+  "sourceHashes": [
+    {
+      "file": "docs/planning/implementation-plan.md",
+      "sha256": "43b4434165c076da393445d9ba23f908941f706252483547935ce298bff8d851"
+    },
+    {
+      "file": "logs/plan-gate.md",
+      "sha256": "62cb56ffbee36a96e0986068f63d6189cd40a6015bbe592c35e85a4375d90299"
+    },
+    {
+      "file": "logs/project-journal.md",
+      "sha256": "404cb8d4ce39963f16f11ce81c514382b635207bb2c12a05a1153bce65b213b0"
+    },
+    {
+      "file": "spec/SRS_Vet_Clinic_v0.1.tex",
+      "sha256": "e93e83ca0f7659e065a646a27467ebbcac6729d8784179a2cefe245671930ac9"
+    },
+    {
+      "file": "spec/SRS_Vet_Clinic_v0.1_addendum_001.md",
+      "sha256": "a7fc2228b46905f153abe1a20f60a314490e991177661ca944a26b7b5fb4e0c8"
+    },
+    {
+      "file": "docs/planning/traceability.md",
+      "sha256": "f52ab6454bff87724897a55a3840e499c08e26da43c280f0a968e842e2a5a9da"
+    },
+    {
+      "file": "docs/planning/risk-register.md",
+      "sha256": "ea2e054254259db3207e97391af2614cbcc692dc23c48395f4440961293bf566"
+    },
+    {
+      "file": "docs/planning/v02-planning-audit.md",
+      "sha256": "19e5285de928c56d9ce687e41829c52f238d762b90aa9a643bba90d4eb3203fb"
+    }
+  ],
+  "schedule": {
+    "tasks": 39,
+    "uniqueTasks": 39,
+    "mermaidTasks": 39,
+    "agentHours": 258,
+    "humanHours": 37.5,
+    "horizon": 48,
+    "overlaps": [],
+    "cycles": [],
+    "tableVsMermaid": [],
+    "resourceOrderChanges": [],
+    "effortMismatches": [],
+    "semanticMissing": [],
+    "critMismatch": [],
+    "slack": [
+      {
+        "id": "P1",
+        "slack": 0
+      },
+      {
+        "id": "R-D02-1",
+        "slack": 0
+      },
+      {
+        "id": "D02-FIX",
+        "slack": 0
+      },
+      {
+        "id": "R-D02-2",
+        "slack": 0
+      },
+      {
+        "id": "G02-PREP",
+        "slack": 0
+      },
+      {
+        "id": "G02",
+        "slack": 0
+      },
+      {
+        "id": "TEST-INFRA",
+        "slack": 0
+      },
+      {
+        "id": "F01-LG",
+        "slack": 0
+      },
+      {
+        "id": "R-F01",
+        "slack": 14.5
+      },
+      {
+        "id": "F02-LG",
+        "slack": 0
+      },
+      {
+        "id": "F03-LG",
+        "slack": 0
+      },
+      {
+        "id": "R-F23",
+        "slack": 11
+      },
+      {
+        "id": "F04-LG",
+        "slack": 0
+      },
+      {
+        "id": "F05-LG",
+        "slack": 0
+      },
+      {
+        "id": "R-F45",
+        "slack": 6.5
+      },
+      {
+        "id": "F06-LG",
+        "slack": 0
+      },
+      {
+        "id": "F07-LG",
+        "slack": 0
+      },
+      {
+        "id": "F08-LG",
+        "slack": 0
+      },
+      {
+        "id": "R-F678",
+        "slack": 2.5
+      },
+      {
+        "id": "F09-LG",
+        "slack": 0
+      },
+      {
+        "id": "F10-LG",
+        "slack": 0
+      },
+      {
+        "id": "R-F910",
+        "slack": 7.5
+      },
+      {
+        "id": "INT-AUTH",
+        "slack": 0
+      },
+      {
+        "id": "INT-APPT",
+        "slack": 0
+      },
+      {
+        "id": "INT-MED",
+        "slack": 0
+      },
+      {
+        "id": "INT-PET",
+        "slack": 0
+      },
+      {
+        "id": "G03-PREP",
+        "slack": 0
+      },
+      {
+        "id": "G03",
+        "slack": 0.5
+      },
+      {
+        "id": "INT-OPS",
+        "slack": 0
+      },
+      {
+        "id": "V02-PRE",
+        "slack": 0
+      },
+      {
+        "id": "VAL-EXEC",
+        "slack": 0
+      },
+      {
+        "id": "VAL-SUPPORT",
+        "slack": 0
+      },
+      {
+        "id": "EVID-PRE",
+        "slack": 0
+      },
+      {
+        "id": "VAL-FIX",
+        "slack": 0
+      },
+      {
+        "id": "VAL-ACCEPT",
+        "slack": 0
+      },
+      {
+        "id": "FINAL-CONS",
+        "slack": 0
+      },
+      {
+        "id": "R-FINAL",
+        "slack": 0
+      },
+      {
+        "id": "G04-PREP",
+        "slack": 0
+      },
+      {
+        "id": "G04",
+        "slack": 0
+      }
+    ],
+    "infrastructure": {
+      "id": "TEST-INFRA",
+      "role": "Agent",
+      "start": 6,
+      "end": 8,
+      "hours": 12
+    },
+    "f01": {
+      "id": "F01-LG",
+      "role": "Agent",
+      "start": 8,
+      "end": 10.5,
+      "hours": 15
+    }
+  },
+  "budgets": {
+    "infrastructure": [
+      {
+        "work": "Підібрати runner для підтвердженого implementation stack і визначити єдині локальні test commands",
+        "hours": 2
+      },
+      {
+        "work": "Створити manifest/lockfile, установити й зафіксувати test dependencies, додати конфігурацію",
+        "hours": 2
+      },
+      {
+        "work": "Створити мінімальні спільні fixtures/adapters для ізольованого стану, керованого часу, файлів та зовнішніх SMS/email меж",
+        "hours": 4
+      },
+      {
+        "work": "Перевірити test harness: навмисний fail/pass, ізоляцію, deterministic seed і повторний запуск",
+        "hours": 3
+      },
+      {
+        "work": "Поточний запис D01",
+        "hours": 1
+      }
+    ],
+    "infrastructureTotal": 12,
+    "features": [
+      {
+        "id": "F01-LG",
+        "parts": [
+          4.5,
+          7.5,
+          2,
+          1
+        ],
+        "total": 15,
+        "sum": 15,
+        "scheduleHours": 15,
+        "earliestCodeDay": 8.75,
+        "printedCodeDay": 8.75
+      },
+      {
+        "id": "F02-LG",
+        "parts": [
+          3,
+          5,
+          1.5,
+          1
+        ],
+        "total": 10.5,
+        "sum": 10.5,
+        "scheduleHours": 10.5,
+        "earliestCodeDay": 11,
+        "printedCodeDay": 11
+      },
+      {
+        "id": "F03-LG",
+        "parts": [
+          3.5,
+          7,
+          2,
+          1
+        ],
+        "total": 13.5,
+        "sum": 13.5,
+        "scheduleHours": 13.5,
+        "earliestCodeDay": 12.833333333333334,
+        "printedCodeDay": 12.83
+      },
+      {
+        "id": "F04-LG",
+        "parts": [
+          4.5,
+          7.5,
+          2,
+          1
+        ],
+        "total": 15,
+        "sum": 15,
+        "scheduleHours": 15,
+        "earliestCodeDay": 15.25,
+        "printedCodeDay": 15.25
+      },
+      {
+        "id": "F05-LG",
+        "parts": [
+          5,
+          9.5,
+          2.5,
+          1
+        ],
+        "total": 18,
+        "sum": 18,
+        "scheduleHours": 18,
+        "earliestCodeDay": 17.833333333333332,
+        "printedCodeDay": 17.83
+      },
+      {
+        "id": "F06-LG",
+        "parts": [
+          2.5,
+          4,
+          1.5,
+          1
+        ],
+        "total": 9,
+        "sum": 9,
+        "scheduleHours": 9,
+        "earliestCodeDay": 20.416666666666668,
+        "printedCodeDay": 20.42
+      },
+      {
+        "id": "F07-LG",
+        "parts": [
+          2.5,
+          4,
+          1.5,
+          1
+        ],
+        "total": 9,
+        "sum": 9,
+        "scheduleHours": 9,
+        "earliestCodeDay": 21.916666666666668,
+        "printedCodeDay": 21.92
+      },
+      {
+        "id": "F08-LG",
+        "parts": [
+          3,
+          6,
+          2,
+          1
+        ],
+        "total": 12,
+        "sum": 12,
+        "scheduleHours": 12,
+        "earliestCodeDay": 23.5,
+        "printedCodeDay": 23.5
+      },
+      {
+        "id": "F09-LG",
+        "parts": [
+          2,
+          4.5,
+          1.5,
+          1
+        ],
+        "total": 9,
+        "sum": 9,
+        "scheduleHours": 9,
+        "earliestCodeDay": 25.333333333333332,
+        "printedCodeDay": 25.33
+      },
+      {
+        "id": "F10-LG",
+        "parts": [
+          3,
+          6,
+          2,
+          1
+        ],
+        "total": 12,
+        "sum": 12,
+        "scheduleHours": 12,
+        "earliestCodeDay": 27,
+        "printedCodeDay": 27
+      }
+    ],
+    "featureColumnTotals": [
+      33.5,
+      61,
+      18.5,
+      10
+    ],
+    "integration": [
+      {
+        "id": "INT-AUTH",
+        "parts": [
+          5,
+          3,
+          1
+        ],
+        "total": 9
+      },
+      {
+        "id": "INT-APPT",
+        "parts": [
+          8,
+          5,
+          2
+        ],
+        "total": 15
+      },
+      {
+        "id": "INT-MED",
+        "parts": [
+          7,
+          4,
+          1
+        ],
+        "total": 12
+      },
+      {
+        "id": "INT-PET",
+        "parts": [
+          5,
+          3,
+          1
+        ],
+        "total": 9
+      },
+      {
+        "id": "INT-OPS",
+        "parts": [
+          5,
+          3,
+          1
+        ],
+        "total": 9
+      }
+    ],
+    "integrationColumnTotals": [
+      30,
+      18,
+      6
+    ]
+  },
+  "archive": {
+    "copies": [
+      {
+        "file": "github-snapshot.json",
+        "bytes": 78464,
+        "sha256": "07ec75e5c0c2c632fb14d0bc8f91f006d040aeb62b1b49bc26c1f3f4e14beaae",
+        "equal": true
+      },
+      {
+        "file": "live-state.json",
+        "bytes": 1074,
+        "sha256": "38ce1a76c84b92b2031f466b95cf4e9e5d6cd100faeb118d36158c27397b6126",
+        "equal": true
+      },
+      {
+        "file": "report.md",
+        "bytes": 25949,
+        "sha256": "c9558b72198492704de96e92f0552f869ee0cc6ae54c892a17429cfc7dddca95",
+        "equal": true
+      },
+      {
+        "file": "verification-results.json",
+        "bytes": 13317,
+        "sha256": "ad7743cf129d277de5ae6e71b4401f41959f0661166965149631d87f6093220c",
+        "equal": true
+      },
+      {
+        "file": "verify.cjs",
+        "bytes": 7406,
+        "sha256": "6fc371de679993e1743a14aa6387025a5855bf67e3b985b83da40a0ec991e1e1",
+        "equal": true
+      }
+    ],
+    "brokenRelativeLinks": [],
+    "relativeLinksChecked": 69,
+    "secretPatternCandidates": [],
+    "issueSnapshotCount": 25,
+    "nonNullEmails": 0,
+    "historicalReplayMatches": true,
+    "historicalReplayGantt": {
+      "tasks": 38,
+      "hours": 246,
+      "horizon": 46
+    },
+    "currentReplayGantt": {
+      "tasks": 39,
+      "hours": 258,
+      "horizon": 48
+    },
+    "replayMethod": "Unmodified archived source executed in VM; reads remapped, writes captured in memory; old plan supplied from Git on stdin. No historical files overwritten."
+  },
+  "baselineChecks": {
+    "counts": {
+      "requirements": 95,
+      "uniqueREQ": 95,
+      "ac": 95,
+      "uniqueAC": 95,
+      "bdd": 51,
+      "uniqueBDD": 51,
+      "srsMatrix": 95,
+      "planningMatrix": 95
+    },
+    "matrixErrors": [],
+    "coverageGaps": []
+  },
+  "limits": [
+    "Fixed resource order; ready external prerequisites assumed.",
+    "Estimation confidence is a qualitative audit judgement, not established by sums.",
+    "Secret scan is pattern-based and supplemented by content review.",
+    "Current source SHA-256 anchors uncommitted input."
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "audit_date": "2026-10-18",
+  "repository": "yanchiix/vet-clinic",
+  "branch": "main",
+  "local_HEAD": "b1a6cd8608ad59f6bce5dc7c835e0178b6881a81",
+  "local_origin_main": "b1a6cd8608ad59f6bce5dc7c835e0178b6881a81",
+  "remote_main": "b1a6cd8608ad59f6bce5dc7c835e0178b6881a81",
+  "remote_source": "https://api.github.com/repos/yanchiix/vet-clinic/git/ref/heads/main",
+  "initial_git_status": [
+    "?? docs/.gitkeep"
+  ],
+  "initial_staging_empty": true,
+  "plan_gate_file_exists": false,
+  "d02_comments": [
+    {
+      "url": "https://github.com/yanchiix/vet-clinic/issues/19#issuecomment-6250515670",
+      "author": "yanchiix",
+      "created_at": "2026-10-18T13:31:54Z",
+      "updated_at": "2026-10-18T13:31:54Z",
+      "body": "D02: APPROVE. Пакет планування погоджую, передаю на G02 PLAN-GATE."
+    }
+  ],
+  "issue_search_count": 25,
+  "project_status": {
+    "result": "NOT VERIFIED",
+    "reason": "No Projects tools in the GitHub connector; cua.getState returned apps=[] and browsers=[]. Issue state is not Project status."
+  }
+}

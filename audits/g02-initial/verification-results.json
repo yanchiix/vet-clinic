@@ -1,0 +1,728 @@
+{
+  "counts": {
+    "requirements": 95,
+    "uniqueREQ": 95,
+    "ac": 95,
+    "uniqueAC": 95,
+    "bdd": 51,
+    "uniqueBDD": 51,
+    "srsMatrix": 95,
+    "planningMatrix": 95
+  },
+  "missingREQ": [],
+  "extraREQ": [],
+  "matrixErrors": [],
+  "uncovered": [],
+  "functionalCoverageGaps": [],
+  "issues": [
+    {
+      "number": 1,
+      "id": "S01",
+      "state": "closed",
+      "missing": [],
+      "extra": [],
+      "unknown": {
+        "req": [],
+        "ac": [],
+        "bdd": []
+      },
+      "missingRelatedBDD": [],
+      "releaseWideException": false
+    },
+    {
+      "number": 2,
+      "id": "A01",
+      "state": "closed",
+      "missing": [],
+      "extra": [],
+      "unknown": {
+        "req": [],
+        "ac": [],
+        "bdd": []
+      },
+      "missingRelatedBDD": [
+        "BDD-043"
+      ],
+      "releaseWideException": false
+    },
+    {
+      "number": 3,
+      "id": "G01",
+      "state": "closed",
+      "missing": [],
+      "extra": [],
+      "unknown": {
+        "req": [],
+        "ac": [],
+        "bdd": []
+      },
+      "missingRelatedBDD": [],
+      "releaseWideException": false
+    },
+    {
+      "number": 4,
+      "id": "T01",
+      "state": "open",
+      "missing": [],
+      "extra": [],
+      "unknown": {
+        "req": [],
+        "ac": [],
+        "bdd": []
+      },
+      "missingRelatedBDD": [],
+      "releaseWideException": false
+    },
+    {
+      "number": 5,
+      "id": "T02",
+      "state": "open",
+      "missing": [],
+      "extra": [],
+      "unknown": {
+        "req": [],
+        "ac": [],
+        "bdd": []
+      },
+      "missingRelatedBDD": [],
+      "releaseWideException": false
+    },
+    {
+      "number": 6,
+      "id": "T03",
+      "state": "open",
+      "missing": [],
+      "extra": [],
+      "unknown": {
+        "req": [],
+        "ac": [],
+        "bdd": []
+      },
+      "missingRelatedBDD": [],
+      "releaseWideException": false
+    },
+    {
+      "number": 7,
+      "id": "T04",
+      "state": "open",
+      "missing": [],
+      "extra": [],
+      "unknown": {
+        "req": [],
+        "ac": [],
+        "bdd": []
+      },
+      "missingRelatedBDD": [],
+      "releaseWideException": false
+    },
+    {
+      "number": 8,
+      "id": "F01",
+      "state": "open",
+      "missing": [],
+      "extra": [],
+      "unknown": {
+        "req": [],
+        "ac": [],
+        "bdd": []
+      },
+      "missingRelatedBDD": [],
+      "releaseWideException": false
+    },
+    {
+      "number": 9,
+      "id": "F02",
+      "state": "open",
+      "missing": [],
+      "extra": [],
+      "unknown": {
+        "req": [],
+        "ac": [],
+        "bdd": []
+      },
+      "missingRelatedBDD": [],
+      "releaseWideException": false
+    },
+    {
+      "number": 10,
+      "id": "F03",
+      "state": "open",
+      "missing": [],
+      "extra": [],
+      "unknown": {
+        "req": [],
+        "ac": [],
+        "bdd": []
+      },
+      "missingRelatedBDD": [],
+      "releaseWideException": false
+    },
+    {
+      "number": 11,
+      "id": "F04",
+      "state": "open",
+      "missing": [],
+      "extra": [],
+      "unknown": {
+        "req": [],
+        "ac": [],
+        "bdd": []
+      },
+      "missingRelatedBDD": [],
+      "releaseWideException": false
+    },
+    {
+      "number": 12,
+      "id": "F05",
+      "state": "open",
+      "missing": [],
+      "extra": [],
+      "unknown": {
+        "req": [],
+        "ac": [],
+        "bdd": []
+      },
+      "missingRelatedBDD": [],
+      "releaseWideException": false
+    },
+    {
+      "number": 13,
+      "id": "F06",
+      "state": "open",
+      "missing": [],
+      "extra": [],
+      "unknown": {
+        "req": [],
+        "ac": [],
+        "bdd": []
+      },
+      "missingRelatedBDD": [],
+      "releaseWideException": false
+    },
+    {
+      "number": 14,
+      "id": "F07",
+      "state": "open",
+      "missing": [],
+      "extra": [],
+      "unknown": {
+        "req": [],
+        "ac": [],
+        "bdd": []
+      },
+      "missingRelatedBDD": [],
+      "releaseWideException": false
+    },
+    {
+      "number": 15,
+      "id": "F08",
+      "state": "open",
+      "missing": [],
+      "extra": [],
+      "unknown": {
+        "req": [],
+        "ac": [],
+        "bdd": []
+      },
+      "missingRelatedBDD": [],
+      "releaseWideException": false
+    },
+    {
+      "number": 16,
+      "id": "F09",
+      "state": "open",
+      "missing": [],
+      "extra": [],
+      "unknown": {
+        "req": [],
+        "ac": [],
+        "bdd": []
+      },
+      "missingRelatedBDD": [],
+      "releaseWideException": false
+    },
+    {
+      "number": 17,
+      "id": "F10",
+      "state": "open",
+      "missing": [],
+      "extra": [],
+      "unknown": {
+        "req": [],
+        "ac": [],
+        "bdd": []
+      },
+      "missingRelatedBDD": [],
+      "releaseWideException": false
+    },
+    {
+      "number": 18,
+      "id": "D01",
+      "state": "open",
+      "missing": [],
+      "extra": [],
+      "unknown": {
+        "req": [],
+        "ac": [],
+        "bdd": []
+      },
+      "missingRelatedBDD": [],
+      "releaseWideException": false
+    },
+    {
+      "number": 19,
+      "id": "D02",
+      "state": "closed",
+      "missing": [],
+      "extra": [],
+      "unknown": {
+        "req": [],
+        "ac": [],
+        "bdd": []
+      },
+      "missingRelatedBDD": [],
+      "releaseWideException": false
+    },
+    {
+      "number": 20,
+      "id": "V01",
+      "state": "open",
+      "missing": [],
+      "extra": [],
+      "unknown": {
+        "req": [],
+        "ac": [],
+        "bdd": []
+      },
+      "missingRelatedBDD": [],
+      "releaseWideException": false
+    },
+    {
+      "number": 21,
+      "id": "V02",
+      "state": "open",
+      "missing": [],
+      "extra": [],
+      "unknown": {
+        "req": [],
+        "ac": [],
+        "bdd": []
+      },
+      "missingRelatedBDD": [],
+      "releaseWideException": false
+    },
+    {
+      "number": 22,
+      "id": "VAL01",
+      "state": "open",
+      "missing": [],
+      "extra": [],
+      "unknown": {
+        "req": [],
+        "ac": [],
+        "bdd": []
+      },
+      "missingRelatedBDD": [],
+      "releaseWideException": false
+    },
+    {
+      "number": 23,
+      "id": "G02",
+      "state": "open",
+      "missing": [],
+      "extra": [],
+      "unknown": {
+        "req": [],
+        "ac": [],
+        "bdd": []
+      },
+      "missingRelatedBDD": [],
+      "releaseWideException": false
+    },
+    {
+      "number": 24,
+      "id": "G03",
+      "state": "open",
+      "missing": [],
+      "extra": [],
+      "unknown": {
+        "req": [],
+        "ac": [],
+        "bdd": []
+      },
+      "missingRelatedBDD": [],
+      "releaseWideException": false
+    },
+    {
+      "number": 25,
+      "id": "G04",
+      "state": "open",
+      "missing": [
+        "REQ-DP-001",
+        "REQ-DP-002",
+        "REQ-DP-003",
+        "REQ-DP-004",
+        "REQ-DP-005",
+        "REQ-DP-006",
+        "REQ-F-001",
+        "REQ-F-002",
+        "REQ-F-003",
+        "REQ-F-004",
+        "REQ-F-005",
+        "REQ-F-006",
+        "REQ-F-007",
+        "REQ-F-008",
+        "REQ-F-009",
+        "REQ-F-010",
+        "REQ-F-011",
+        "REQ-F-012",
+        "REQ-F-013",
+        "REQ-F-014",
+        "REQ-F-015",
+        "REQ-F-016",
+        "REQ-F-017",
+        "REQ-F-018",
+        "REQ-F-019",
+        "REQ-F-020",
+        "REQ-F-021",
+        "REQ-F-022",
+        "REQ-F-023",
+        "REQ-F-024",
+        "REQ-F-025",
+        "REQ-F-026",
+        "REQ-F-027",
+        "REQ-F-028",
+        "REQ-F-029",
+        "REQ-F-030",
+        "REQ-F-031",
+        "REQ-F-032",
+        "REQ-F-033",
+        "REQ-F-034",
+        "REQ-F-035",
+        "REQ-F-036",
+        "REQ-F-037",
+        "REQ-F-038",
+        "REQ-F-039",
+        "REQ-F-040",
+        "REQ-F-041",
+        "REQ-F-042",
+        "REQ-F-043",
+        "REQ-F-044",
+        "REQ-F-045",
+        "REQ-F-046",
+        "REQ-F-047",
+        "REQ-F-048",
+        "REQ-F-049",
+        "REQ-F-050",
+        "REQ-F-051",
+        "REQ-F-052",
+        "REQ-F-053",
+        "REQ-F-054",
+        "REQ-F-055",
+        "REQ-F-056",
+        "REQ-F-057",
+        "REQ-F-058",
+        "REQ-F-059",
+        "REQ-F-060",
+        "REQ-F-061",
+        "REQ-F-062",
+        "REQ-F-063",
+        "REQ-F-064",
+        "REQ-F-065",
+        "REQ-F-066",
+        "REQ-F-067",
+        "REQ-F-068",
+        "REQ-F-069",
+        "REQ-F-070",
+        "REQ-F-071",
+        "REQ-F-072",
+        "REQ-F-073",
+        "REQ-F-074",
+        "REQ-NF-001",
+        "REQ-NF-002",
+        "REQ-NF-003",
+        "REQ-NF-004",
+        "REQ-NF-005",
+        "REQ-NF-006",
+        "REQ-NF-007",
+        "REQ-NF-008",
+        "REQ-NF-009",
+        "REQ-NF-010",
+        "REQ-NF-011",
+        "REQ-NF-012",
+        "REQ-NF-013",
+        "REQ-NF-014",
+        "REQ-NF-015"
+      ],
+      "extra": [],
+      "unknown": {
+        "req": [],
+        "ac": [],
+        "bdd": []
+      },
+      "missingRelatedBDD": [],
+      "releaseWideException": true
+    }
+  ],
+  "gantt": {
+    "tasks": 38,
+    "chartTasks": 38,
+    "chartDiff": [],
+    "overlaps": [],
+    "agentHours": 246,
+    "humanHours": 37.5,
+    "effortMismatch": [],
+    "horizon": 46,
+    "cycleNodes": [],
+    "resourceConstrainedHorizon": 46,
+    "earliestScheduleMismatch": [],
+    "criticalMarksWithNonzeroSlack": [
+      {
+        "id": "G03",
+        "slack": 0.5
+      }
+    ],
+    "calculatedSlack": [
+      {
+        "id": "P1",
+        "slack": 0
+      },
+      {
+        "id": "R-D02-1",
+        "slack": 0
+      },
+      {
+        "id": "D02-FIX",
+        "slack": 0
+      },
+      {
+        "id": "R-D02-2",
+        "slack": 0
+      },
+      {
+        "id": "G02-PREP",
+        "slack": 0
+      },
+      {
+        "id": "G02",
+        "slack": 0
+      },
+      {
+        "id": "F01-LG",
+        "slack": 0
+      },
+      {
+        "id": "R-F01",
+        "slack": 14.5
+      },
+      {
+        "id": "F02-LG",
+        "slack": 0
+      },
+      {
+        "id": "F03-LG",
+        "slack": 0
+      },
+      {
+        "id": "R-F23",
+        "slack": 11
+      },
+      {
+        "id": "F04-LG",
+        "slack": 0
+      },
+      {
+        "id": "F05-LG",
+        "slack": 0
+      },
+      {
+        "id": "R-F45",
+        "slack": 6.5
+      },
+      {
+        "id": "F06-LG",
+        "slack": 0
+      },
+      {
+        "id": "F07-LG",
+        "slack": 0
+      },
+      {
+        "id": "F08-LG",
+        "slack": 0
+      },
+      {
+        "id": "R-F678",
+        "slack": 2.5
+      },
+      {
+        "id": "F09-LG",
+        "slack": 0
+      },
+      {
+        "id": "F10-LG",
+        "slack": 0
+      },
+      {
+        "id": "R-F910",
+        "slack": 7.5
+      },
+      {
+        "id": "INT-AUTH",
+        "slack": 0
+      },
+      {
+        "id": "INT-APPT",
+        "slack": 0
+      },
+      {
+        "id": "INT-MED",
+        "slack": 0
+      },
+      {
+        "id": "INT-PET",
+        "slack": 0
+      },
+      {
+        "id": "G03-PREP",
+        "slack": 0
+      },
+      {
+        "id": "G03",
+        "slack": 0.5
+      },
+      {
+        "id": "INT-OPS",
+        "slack": 0
+      },
+      {
+        "id": "V02-PRE",
+        "slack": 0
+      },
+      {
+        "id": "VAL-EXEC",
+        "slack": 0
+      },
+      {
+        "id": "VAL-SUPPORT",
+        "slack": 0
+      },
+      {
+        "id": "EVID-PRE",
+        "slack": 0
+      },
+      {
+        "id": "VAL-FIX",
+        "slack": 0
+      },
+      {
+        "id": "VAL-ACCEPT",
+        "slack": 0
+      },
+      {
+        "id": "FINAL-CONS",
+        "slack": 0
+      },
+      {
+        "id": "R-FINAL",
+        "slack": 0
+      },
+      {
+        "id": "G04-PREP",
+        "slack": 0
+      },
+      {
+        "id": "G04",
+        "slack": 0
+      }
+    ],
+    "missingSemanticChartEdges": [
+      {
+        "from": "rf01",
+        "to": "intauth"
+      },
+      {
+        "from": "rf23",
+        "to": "intauth"
+      },
+      {
+        "from": "rf678",
+        "to": "intauth"
+      },
+      {
+        "from": "rf01",
+        "to": "intappt"
+      },
+      {
+        "from": "rf45",
+        "to": "intappt"
+      },
+      {
+        "from": "rf678",
+        "to": "intappt"
+      },
+      {
+        "from": "rf01",
+        "to": "intmed"
+      },
+      {
+        "from": "rf23",
+        "to": "intmed"
+      },
+      {
+        "from": "rf45",
+        "to": "intmed"
+      },
+      {
+        "from": "rf678",
+        "to": "intmed"
+      },
+      {
+        "from": "rf23",
+        "to": "intpet"
+      },
+      {
+        "from": "rf45",
+        "to": "intpet"
+      },
+      {
+        "from": "rf678",
+        "to": "intpet"
+      },
+      {
+        "from": "intauth",
+        "to": "g03prep"
+      },
+      {
+        "from": "intappt",
+        "to": "g03prep"
+      },
+      {
+        "from": "intmed",
+        "to": "g03prep"
+      },
+      {
+        "from": "rf23",
+        "to": "intops"
+      },
+      {
+        "from": "rf45",
+        "to": "intops"
+      },
+      {
+        "from": "rf910",
+        "to": "intops"
+      }
+    ]
+  },
+  "risks": {
+    "traditional": 12,
+    "ai": 6,
+    "invalid": []
+  },
+  "limitations": [
+    "ID checks are not semantic or functional tests.",
+    "CPM assumes fixed resource order, GO decisions, ready DEP/BK-168H.",
+    "Red preparation, ongoing D01 and DEP decision effort cannot be inferred from numeric rows."
+  ]
+}

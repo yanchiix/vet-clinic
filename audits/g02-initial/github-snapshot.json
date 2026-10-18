@@ -1,0 +1,781 @@
+{
+  "audit_date": "2026-10-18",
+  "source": "GitHub connector read-only fetch_issue and fetch_issue_comments",
+  "issues": [
+    {
+      "url": "https://github.com/yanchiix/vet-clinic/issues/1",
+      "title": "[S01] Зафіксувати затверджену SRS v0.1",
+      "issue_number": 1,
+      "body": "### Purpose\nЗафіксувати затверджену SRS v0.1 як базовий артефакт зі стабільними ідентифікаторами, критеріями прийняття та матрицею простежуваності.\n\n### Source requirements\n- REQ-DP-001, REQ-DP-005.\n- Артефакт: `spec/SRS_Vet_Clinic_v0.1.tex`.\n\n### Related AC / BDD\n- AC-DP-001, AC-DP-005.\n- BDD: немає; перевірка за AC та оглядом артефактів.\n\n### Dependencies\n- Нових залежностей немає; артефакт виконано в ЛР2.\n- Історичні докази перевірки й затвердження обліковані в G01.\n\n### Responsible role\nAgent + Human. Затвердження baseline належить Human.\n\n### Done when\n- SRS v0.1 збережена у форматі LaTeX у /spec.\n- Вимоги мають стабільні ID, AC та рядки матриці з чинними BDD-посиланнями, де вони є.\n- Зафіксовані SPEC-GATE: PASS і людське затвердження від 03.10.2026.\n- Наявний коміт затвердження f6a95894fe1e08da6b6787a0d26e6bacaf653e6d.",
+      "state": "closed",
+      "user": {
+        "login": "yanchiix",
+        "name": "yanchiix",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/183918981?v=4",
+        "id": 183918981
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "specification",
+          "color": "313b48",
+          "description": ""
+        }
+      ],
+      "milestone": null,
+      "state_reason": "completed",
+      "comments": 0,
+      "created_at": "2026-10-17T18:02:43Z",
+      "updated_at": "2026-10-17T18:05:16Z",
+      "closed_at": "2026-10-17T18:05:16Z",
+      "display_url": "https://github.com/yanchiix/vet-clinic/issues/1",
+      "display_title": "[S01] Зафіксувати затверджену SRS v0.1"
+    },
+    {
+      "url": "https://github.com/yanchiix/vet-clinic/issues/2",
+      "title": "[A01] Зафіксувати ADD-001",
+      "issue_number": 2,
+      "body": "### Purpose\nЗафіксувати уточнення щодо використання виконаної процедури як бази відносного строку рекомендації та застосовувати SRS v0.1 разом з ADD-001.\n\n### Source requirements\n- REQ-F-062, REQ-F-067.\n- REQ-DP-001, REQ-DP-005.\n- Артефакт: spec/SRS_Vet_Clinic_v0.1_addendum_001.md.\n\n### Related AC / BDD\n- AC-F-067; AC-DP-001, AC-DP-005.\n- BDD-046 з уточненням ADD-001.\n\n### Dependencies\n- S01.\n\n### Responsible role\nAgent + Human. Погодження уточнення належить Human.\n\n### Done when\n- ADD-001 має статус APPROVED і людське затвердження від 03.10.2026.\n- Зафіксовано: відносний строк від виконаної процедури дозволений лише за відомої точної дати.\n- За невідомої дати дозволено конкретну дату рекомендації або іншу дозволену REQ-F-067 підставу з відомою точною датою.\n- Збережено чотири погоджені випадки перевірки AC-F-067 / BDD-046.\n- Тексти та ID вимог, AC і BDD у baseline не змінено; нові ID не створено.",
+      "state": "closed",
+      "user": {
+        "login": "yanchiix",
+        "name": "yanchiix",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/183918981?v=4",
+        "id": 183918981
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "addendum",
+          "color": "968dec",
+          "description": ""
+        }
+      ],
+      "milestone": null,
+      "state_reason": "completed",
+      "comments": 0,
+      "created_at": "2026-10-17T18:03:10Z",
+      "updated_at": "2026-10-17T18:05:18Z",
+      "closed_at": "2026-10-17T18:05:18Z",
+      "display_url": "https://github.com/yanchiix/vet-clinic/issues/2",
+      "display_title": "[A01] Зафіксувати ADD-001"
+    },
+    {
+      "url": "https://github.com/yanchiix/vet-clinic/issues/3",
+      "title": "[G01] Історичний SPEC-GATE та затвердження baseline — ЛР2",
+      "issue_number": 3,
+      "body": "### Purpose\nЗберегти історичні докази окремої перевірки специфікації та подальшого людського затвердження baseline у ЛР2. Цей Gate не замінює PLAN-GATE ЛР3.\n\n### Source requirements\n- REQ-DP-006.\n- Артефакти: SRS v0.1, logs/spec-gate.md, logs/sked-summary.md.\n\n### Related AC / BDD\n- AC-DP-006.\n- BDD: немає; перевірка документів і рішень.\n\n### Dependencies\n- Історичні матеріали: перевірена SRS і підсумок SKED.\n- Нових робіт для повторного проходження цього Gate немає.\n\n### Responsible role\nHuman.\n\n### Done when\n- У журналі збережено результат фінального SPEC-GATE: PASS від 02.10.2026.\n- Блокуючі зауваження SG-B01–SG-B11 закриті.\n- Після PASS окремо зафіксовано людське затвердження baseline від 03.10.2026 та коміт затвердження.\n- Історичний статус відокремлено від готовності плану ЛР3 і від виконання вимог майбутньою системою.\n- Gate не створює код або тести.",
+      "state": "closed",
+      "user": {
+        "login": "yanchiix",
+        "name": "yanchiix",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/183918981?v=4",
+        "id": 183918981
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "gate",
+          "color": "182289",
+          "description": ""
+        }
+      ],
+      "milestone": null,
+      "state_reason": "completed",
+      "comments": 0,
+      "created_at": "2026-10-17T18:03:12Z",
+      "updated_at": "2026-10-17T18:05:20Z",
+      "closed_at": "2026-10-17T18:05:20Z",
+      "display_url": "https://github.com/yanchiix/vet-clinic/issues/3",
+      "display_title": "[G01] Історичний SPEC-GATE та затвердження baseline — ЛР2"
+    },
+    {
+      "url": "https://github.com/yanchiix/vet-clinic/issues/4",
+      "title": "[T01] Тести доступу, профілів і SMS",
+      "issue_number": 4,
+      "body": "### Purpose\nПеревірити клієнтський і робочий доступ, профілі, коди, посилання, відновлення, сеанси та погоджені механізми захисту в циклі TDD.\n\n### Source requirements\n- REQ-F-001–018, REQ-F-073.\n- REQ-NF-006, REQ-NF-010–015.\n- REQ-DP-002–003.\n\n### Related AC / BDD\n- AC-F-001–018, AC-F-073; AC-NF-006, AC-NF-010–015; AC-DP-002–003.\n- BDD-001–011, BDD-018, BDD-038, BDD-049, BDD-051.\n\n### Dependencies\n**Blocks start / prerequisites:** S01. Завершені F01–F02 для написання тестів і Red не потрібні.\n\n**Required for closure / integration verification:** Green відповідних реалізацій F01–F02; інтеграція з F05/F07 для медичного доступу й збереження профілю; докази TDD у D01. Реальна доставка SMS перевіряється у V01.\n\n### Responsible role\nAgent.\n\n### Done when\n- Автоматизовані тести охоплюють відповідні AC, включно з негативними, граничними й конкурентними випадками.\n- Перевірено унікальність телефону й робочого логіна, межі кодів і посилань, атомарність зміни доступу, завершення сеансів та захист останнього адміністратора.\n- Перевірки доступу використовують прямі запити, зокрема до файлів і попередніх версій.\n- Для функціональних змін у /logs є очікуваний Red до реалізації та Green після неї; після рефакторингу — повторний Green, якщо рефакторинг був.\n- Імітація SMS-сервісу не подається як доказ доставки на телефон; огляд і перевірки цільового середовища передані до V01.",
+      "state": "open",
+      "user": {
+        "login": "yanchiix",
+        "name": "yanchiix",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/183918981?v=4",
+        "id": 183918981
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "test",
+          "color": "eb9948",
+          "description": ""
+        }
+      ],
+      "milestone": null,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-17T18:03:14Z",
+      "updated_at": "2026-10-17T18:03:14Z",
+      "closed_at": null,
+      "display_url": "https://github.com/yanchiix/vet-clinic/issues/4",
+      "display_title": "[T01] Тести доступу, профілів і SMS"
+    },
+    {
+      "url": "https://github.com/yanchiix/vet-clinic/issues/5",
+      "title": "[T02] Тести карток, пропозицій і станів тварини",
+      "issue_number": 5,
+      "body": "### Purpose\nПеревірити життєвий цикл картки тварини: створення, підтвердження, зміни, пошук, смерть і припинення опіки.\n\n### Source requirements\n- REQ-F-019–035.\n- REQ-DP-002–003.\n\n### Related AC / BDD\n- AC-F-019–035; AC-DP-002–003.\n- BDD-001, BDD-012–021.\n\n### Dependencies\n**Blocks start / prerequisites:** S01. Завершені F03/F07 для підготовки тестів і Red не потрібні.\n\n**Required for closure / integration verification:** Green F03/F07; наскрізні перевірки з відповідними результатами F02, F04–F06, F08; докази D01.\n\n### Responsible role\nAgent.\n\n### Done when\n- Перевірено всі відповідні AC, включно з невідомими даними, датами народження, унікальністю мікрочипа та відсутністю розкриття чужих даних.\n- Перевірено одну нерозглянуту пропозицію, рішення щодо неї цілком, прямі виправлення працівника й одночасний розгляд.\n- Перевірено незалежність позначок смерті та припинення опіки, обмеження редагування, збереження історії й пошук архівних станів.\n- Перевірено межі автоматичного скасування та гонку між бронюванням і внесенням позначки.\n- Збережено докази Red/Green, а за рефакторингу — повторного Green.",
+      "state": "open",
+      "user": {
+        "login": "yanchiix",
+        "name": "yanchiix",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/183918981?v=4",
+        "id": 183918981
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "test",
+          "color": "eb9948",
+          "description": ""
+        }
+      ],
+      "milestone": null,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-17T18:03:16Z",
+      "updated_at": "2026-10-17T18:03:16Z",
+      "closed_at": null,
+      "display_url": "https://github.com/yanchiix/vet-clinic/issues/5",
+      "display_title": "[T02] Тести карток, пропозицій і станів тварини"
+    },
+    {
+      "url": "https://github.com/yanchiix/vet-clinic/issues/6",
+      "title": "[T03] Тести прийомів і рекомендацій з ADD-001",
+      "issue_number": 6,
+      "body": "### Purpose\nПеревірити взаємопов’язані правила розкладу, бронювання, статусів, історичних прийомів і рекомендацій з урахуванням ADD-001.\n\n### Source requirements\n- REQ-F-036–053, REQ-F-062, REQ-F-064–072.\n- REQ-NF-003; REQ-DP-002–003.\n- ADD-001 у частині застосування REQ-F-067.\n\n### Related AC / BDD\n- AC-F-036–053, AC-F-062, AC-F-064–072; AC-NF-003; AC-DP-002–003.\n- BDD-010, BDD-022–037, BDD-043–048.\n- BDD-046 застосовується разом з ADD-001, без зміни його ID або тексту baseline.\n\n### Dependencies\n**Blocks start / prerequisites:** S01, A01. Завершені F04/F06/F08 для підготовки тестів і Red не потрібні.\n\n**Required for closure / integration verification:** Green F04/F06/F08; інтеграція з F01/F05/F07; чотири випадки ADD-001; докази D01.\n\n### Responsible role\nAgent.\n\n### Done when\n- Перевірено відповідні AC, часові межі, Europe/Kyiv, сезонні переходи часу, перетини та повторне надсилання тієї самої спроби.\n- Конкурентні перевірки використовують дійсно одночасні спроби; часові — керований час.\n- Перевірено перенесення, статуси, відновлення, історичні винятки та обмеження одного підтвердженого або проведеного прийому за рекомендацією.\n- За ADD-001 перевірено чотири випадки.\n- Збережено докази Red/Green та повторного Green після рефакторингу, якщо він був.",
+      "state": "open",
+      "user": {
+        "login": "yanchiix",
+        "name": "yanchiix",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/183918981?v=4",
+        "id": 183918981
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "test",
+          "color": "eb9948",
+          "description": ""
+        }
+      ],
+      "milestone": null,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-17T18:03:17Z",
+      "updated_at": "2026-10-17T18:03:17Z",
+      "closed_at": null,
+      "display_url": "https://github.com/yanchiix/vet-clinic/issues/6",
+      "display_title": "[T03] Тести прийомів і рекомендацій з ADD-001"
+    },
+    {
+      "url": "https://github.com/yanchiix/vet-clinic/issues/7",
+      "title": "[T04] Тести медичних записів, версій і файлів",
+      "issue_number": 7,
+      "body": "### Purpose\nПеревірити доступ до медичних даних, авторство, обов’язкові поля, версії, вкладення та історичні процедури.\n\n### Source requirements\n- REQ-F-054–063.\n- REQ-DP-002–003.\n\n### Related AC / BDD\n- AC-F-054–063; AC-DP-002–003.\n- BDD-031, BDD-037–043.\n\n### Dependencies\n**Blocks start / prerequisites:** S01. Завершений F05 для підготовки тестів і Red не потрібний.\n\n**Required for closure / integration verification:** Green F05; інтеграція з F01–F02, F04, F06, F08; докази D01.\n\n### Responsible role\nAgent.\n\n### Done when\n- Перевірено відповідні AC для призначеного лікаря, автора, інших ветеринарів, належного й стороннього клієнтів та адміністратора.\n- Перевірено фактичний формат файлів, межі кількості й розміру, часткову помилку завантаження та збереження попередніх файлів.\n- Перевірено причини й версії виправлень, позначення помилкового запису та заборону втрати коректного опису проведеного прийому.\n- Перевірено обов’язкові поля процедур клініки та явно невідомі історичні дані з обов’язковим джерелом.\n- Збережено докази Red/Green та повторного Green після рефакторингу, якщо він був.",
+      "state": "open",
+      "user": {
+        "login": "yanchiix",
+        "name": "yanchiix",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/183918981?v=4",
+        "id": 183918981
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "test",
+          "color": "eb9948",
+          "description": ""
+        }
+      ],
+      "milestone": null,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-17T18:03:19Z",
+      "updated_at": "2026-10-17T18:03:19Z",
+      "closed_at": null,
+      "display_url": "https://github.com/yanchiix/vet-clinic/issues/7",
+      "display_title": "[T04] Тести медичних записів, версій і файлів"
+    },
+    {
+      "url": "https://github.com/yanchiix/vet-clinic/issues/8",
+      "title": "[F01] Робочі облікові записи та захист доступу",
+      "issue_number": 8,
+      "body": "### Purpose\nРеалізувати робочі облікові записи та спільні механізми захисту доступу, паролів і сеансів.\n\n### Source requirements\n- REQ-F-010, REQ-F-012–018.\n- REQ-NF-010–015.\n\n### Related AC / BDD\n- AC-F-010, AC-F-012–018; AC-NF-010–015.\n- BDD-005–011, BDD-038, BDD-051.\n\n### Dependencies\n**Blocks start / prerequisites:** S01; G02: GO; релевантний Red із T01; рішення DEP-005 до реалізації захисту.\n\n**Required for closure / integration verification:** релевантний Green T01; перевірки медичного доступу з F05/T04; відповідні докази V01 і D01. Повне закриття цих test/verification/documentation-тікетів не потрібне.\n\n### Responsible role\nAgent + Human. Human погоджує рішення DEP-005.\n\n### Done when\n- Виконано всі наведені AC для створення й блокування працівників, окремих логінів та адміністративного доступу.\n- Реалізовано незмінність і розділення ролей, правила паролів, блокування входу та завершення сеансів.\n- HTTPS, зберігання секретів і серверна авторизація відповідають NF.\n- Відповідні тести проходять, цикл TDD і рішення зафіксовані через D01.\n- OPEN-003 залишається явним обмеженням; непогоджений аварійний доступ не додано.",
+      "state": "open",
+      "user": {
+        "login": "yanchiix",
+        "name": "yanchiix",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/183918981?v=4",
+        "id": 183918981
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "feature",
+          "color": "b23027",
+          "description": ""
+        }
+      ],
+      "milestone": null,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-17T18:03:46Z",
+      "updated_at": "2026-10-17T18:03:46Z",
+      "closed_at": null,
+      "display_url": "https://github.com/yanchiix/vet-clinic/issues/8",
+      "display_title": "[F01] Робочі облікові записи та захист доступу"
+    },
+    {
+      "url": "https://github.com/yanchiix/vet-clinic/issues/9",
+      "title": "[F02] Клієнтський профіль, реєстрація та відновлення",
+      "issue_number": 9,
+      "body": "### Purpose\nРеалізувати клієнтський профіль, надання доступу, вхід, редагування та погоджені процедури відновлення й зміни номера.\n\n### Source requirements\n- REQ-F-001–011, REQ-F-073.\n- REQ-NF-006.\n\n### Related AC / BDD\n- AC-F-001–011, AC-F-073, AC-NF-006.\n- BDD-001–009, BDD-018, BDD-049.\n\n### Dependencies\n**Blocks start / prerequisites:** G02: GO; потрібні механізми доступу й сеансів F01; релевантний Red T01. F01 не обов’язково Done.\n\n**Required for closure / integration verification:** Green T01; інтеграція з F01 та станами F07; докази D01. DEP-002 і фактична доставка SMS — до відповідної перевірки V01; DEP-004 — до реального використання особистого відновлення.\n\n### Responsible role\nAgent + Human. Human визначає параметри інтеграції та достатність доказів при особистій перевірці.\n\n### Done when\n- Виконано AC для профілю, нормалізації й унікальності номера, реєстрації, запрошення та входу.\n- Коди й посилання мають погоджені строки, обмеження спроб, повтору, заміни та прив’язки до операції.\n- Зміна номера й особисте відновлення не залишають часткового результату; успішні операції завершують попередні сеанси.\n- Помилки й тайм-аут SMS не підтверджують номер і не змінюють доступ.\n- Відповідні тести проходять; докази TDD та людські рішення збережено через D01.",
+      "state": "open",
+      "user": {
+        "login": "yanchiix",
+        "name": "yanchiix",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/183918981?v=4",
+        "id": 183918981
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "feature",
+          "color": "b23027",
+          "description": ""
+        }
+      ],
+      "milestone": null,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-17T18:03:48Z",
+      "updated_at": "2026-10-17T18:03:48Z",
+      "closed_at": null,
+      "display_url": "https://github.com/yanchiix/vet-clinic/issues/9",
+      "display_title": "[F02] Клієнтський профіль, реєстрація та відновлення"
+    },
+    {
+      "url": "https://github.com/yanchiix/vet-clinic/issues/10",
+      "title": "[F03] Картки тварин, перевірка даних і пошук",
+      "issue_number": 10,
+      "body": "### Purpose\nРеалізувати основні дані тварини, зв’язок із власником, підтвердження та пропозиції змін, а також пошук клієнтів і тварин.\n\n### Source requirements\n- REQ-F-019–029, REQ-F-034–035.\n\n### Related AC / BDD\n- AC-F-019–029, AC-F-034–035.\n- BDD-001, BDD-012–018, BDD-021.\n\n### Dependencies\n**Blocks start / prerequisites:** G02: GO; потрібні механізми ролей F01 і профілю клієнта F02; релевантний Red T02. Повне Done F01–F02 не потрібне.\n\n**Required for closure / integration verification:** Green відповідної частини T02; REQ-F-025 перевірено з результатами F04/F05/F08; наслідки станів — із F07; докази D01. F04–F08 не блокують початок F03.\n\n### Responsible role\nAgent.\n\n### Done when\n- Виконано AC для полів, дат, невідомих значень, мікрочипа й зв’язку з клієнтом.\n- Реалізовано клієнтське й робоче створення картки, первинну перевірку та роботу до підтвердження.\n- Реалізовано одну нерозглянуту пропозицію, її схвалення/відхилення, прямі виправлення й захист від конкурентного перезапису.\n- Пошук відповідає правилам збігів і доступу та відображає архівні стани.\n- Відповідні тести проходять; докази TDD збережено через D01.",
+      "state": "open",
+      "user": {
+        "login": "yanchiix",
+        "name": "yanchiix",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/183918981?v=4",
+        "id": 183918981
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "feature",
+          "color": "b23027",
+          "description": ""
+        }
+      ],
+      "milestone": null,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-17T18:03:50Z",
+      "updated_at": "2026-10-17T18:03:50Z",
+      "closed_at": null,
+      "display_url": "https://github.com/yanchiix/vet-clinic/issues/10",
+      "display_title": "[F03] Картки тварин, перевірка даних і пошук"
+    },
+    {
+      "url": "https://github.com/yanchiix/vet-clinic/issues/11",
+      "title": "[F04] Розклад і звичайне бронювання",
+      "issue_number": 11,
+      "body": "### Purpose\nРеалізувати розклад на конкретні дати, звичайне бронювання, перенесення та скасування до початку прийому.\n\n### Source requirements\n- REQ-F-036–045.\n- REQ-NF-003.\n\n### Related AC / BDD\n- AC-F-036–045, AC-NF-003.\n- BDD-010, BDD-022–030, BDD-032, BDD-036.\n\n### Dependencies\n**Blocks start / prerequisites:** G02: GO; потрібні механізми ролей і стану працівника F01, ідентифікації тварини та власника F03; релевантний Red T03. F03 не обов’язково Done.\n\n**Required for closure / integration verification:** Green відповідної частини T03; інтеграція з медичними записами F05, рекомендаціями F06, станами тварини F07 та історичними прийомами й статусами F08; докази D01. F05–F08 не блокують початок F04.\n\n### Responsible role\nAgent.\n\n### Done when\n- Виконано AC для двадцятихвилинних інтервалів, змін розкладу та часу Europe/Kyiv.\n- Перевірки перетинів і конкурентного бронювання виконуються сервером; повтор тієї самої спроби повертає той самий запис.\n- Перенесення дозволене за погодженими часовими й рольовими умовами; невдача зберігає первісне бронювання.\n- Зміна лікаря враховує наявність медичного запису; зв’язок із рекомендацією зберігається.\n- Відповідні тести та міжмодульні перевірки проходять; докази TDD збережено через D01.",
+      "state": "open",
+      "user": {
+        "login": "yanchiix",
+        "name": "yanchiix",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/183918981?v=4",
+        "id": 183918981
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "feature",
+          "color": "b23027",
+          "description": ""
+        }
+      ],
+      "milestone": null,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-17T18:03:52Z",
+      "updated_at": "2026-10-17T18:03:52Z",
+      "closed_at": null,
+      "display_url": "https://github.com/yanchiix/vet-clinic/issues/11",
+      "display_title": "[F04] Розклад і звичайне бронювання"
+    },
+    {
+      "url": "https://github.com/yanchiix/vet-clinic/issues/12",
+      "title": "[F05] Медична історія, результати та процедури",
+      "issue_number": 12,
+      "body": "### Purpose\nРеалізувати медичні записи, результати, вкладення, версії, лікувальні тексти та виконані процедури з погодженими правами доступу й авторства.\n\n### Source requirements\n- REQ-F-054–063.\n\n### Related AC / BDD\n- AC-F-054–063.\n- BDD-031, BDD-037–043.\n\n### Dependencies\n**Blocks start / prerequisites:** G02: GO; потрібні механізми доступу F01, картки F03 і зв’язку з прийомом F04; релевантний Red T04. F03/F04 не обов’язково Done.\n\n**Required for closure / integration verification:** Green відповідної частини T04; розмежування медичного й організаційного доступу з F06; узгодженість опису та статусу з F08; релевантні результати V01 і докази D01. F06/F08 не блокують початок F05.\n\n### Responsible role\nAgent.\n\n### Done when\n- Виконано AC для медичного доступу, опису прийому, результатів і текстових призначень та дієти.\n- Перевіряються фактичний формат, кількість і розмір вкладень; результат або нова версія не публікуються після часткового збою завантаження.\n- Редагування доступне лише автору з причиною й попередньою версією; помилкові записи зберігаються в історії.\n- Для проведеного прийому зберігається коректний обов’язковий опис.\n- Процедури клініки та історичні процедури з інших джерел відповідають правилам обов’язкових і невідомих даних.\n- Відповідні тести проходять; докази TDD збережено через D01.",
+      "state": "open",
+      "user": {
+        "login": "yanchiix",
+        "name": "yanchiix",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/183918981?v=4",
+        "id": 183918981
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "feature",
+          "color": "b23027",
+          "description": ""
+        }
+      ],
+      "milestone": null,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-17T18:03:54Z",
+      "updated_at": "2026-10-17T18:03:54Z",
+      "closed_at": null,
+      "display_url": "https://github.com/yanchiix/vet-clinic/issues/12",
+      "display_title": "[F05] Медична історія, результати та процедури"
+    },
+    {
+      "url": "https://github.com/yanchiix/vet-clinic/issues/13",
+      "title": "[F06] Направлення та рекомендації",
+      "issue_number": 13,
+      "body": "### Purpose\nРеалізувати направлення, клінічні й домашні рекомендації, строки, організаційне подання та зв’язок рекомендації з бронюванням.\n\n### Source requirements\n- REQ-F-064–072.\n- REQ-F-062 у частині ADD-001.\n- ADD-001 уточнює застосування REQ-F-067.\n\n### Related AC / BDD\n- AC-F-064–072, AC-F-062.\n- BDD-028, BDD-032, BDD-034, BDD-037, BDD-043–048.\n- AC-F-067 / BDD-046 застосовуються разом з ADD-001.\n\n### Dependencies\n**Blocks start / prerequisites:** G02: GO; A01; потрібні інтерфейси бронювання F04 і медичних процедур F05; релевантний Red T03. F04/F05 не обов’язково Done.\n\n**Required for closure / integration verification:** Green відповідної частини T03, включно з ADD-001; інтеграція з F04/F05, станами тварини F07 і статусами прийому F08; докази D01. F07/F08 не блокують початок F06.\n\n### Responsible role\nAgent.\n\n### Done when\n- Виконано AC для направлень, авторства, версій, форматів і доступу до організаційної частини.\n- Рекомендована дата та початковий строк зберігаються за REQ-F-067; зміна базової дати не викликає автоматичного перерахунку.\n- Невідома точна дата процедури забороняє використати саме її як базу відносного строку; погоджені альтернативи доступні.\n- Список очікування, бронювання, перенесення, скасування та повернення рекомендацій узгоджені зі станом тварини й прийому.\n- Домашня рекомендація має погоджені інструкцію та дату без онлайн-запису й позначки виконання.\n- Відповідні тести, включно з чотирма випадками ADD-001, проходять; докази TDD збережено через D01.",
+      "state": "open",
+      "user": {
+        "login": "yanchiix",
+        "name": "yanchiix",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/183918981?v=4",
+        "id": 183918981
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "feature",
+          "color": "b23027",
+          "description": ""
+        }
+      ],
+      "milestone": null,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-17T18:03:55Z",
+      "updated_at": "2026-10-17T18:03:55Z",
+      "closed_at": null,
+      "display_url": "https://github.com/yanchiix/vet-clinic/issues/13",
+      "display_title": "[F06] Направлення та рекомендації"
+    },
+    {
+      "url": "https://github.com/yanchiix/vet-clinic/issues/14",
+      "title": "[F07] Смерть і припинення опіки та їх наслідки",
+      "issue_number": 14,
+      "body": "### Purpose\nРеалізувати незалежні позначки смерті та припинення опіки, їхні наслідки для доступних дій і контрольоване виправлення.\n\n### Source requirements\n- REQ-F-030–033.\n\n### Related AC / BDD\n- AC-F-030–033.\n- BDD-018–020.\n\n### Dependencies\n**Blocks start / prerequisites:** G02: GO; потрібні інтерфейси картки F03, бронювання F04 і рекомендацій F06; релевантний Red T02. Повне закриття цих feature-тікетів не потрібне.\n\n**Required for closure / integration verification:** Green відповідної частини T02; перевірки наслідків позначок із F03/F04/F06 та історичної хронології з F08 у T03; докази D01. F08 не блокує початок F07.\n\n### Responsible role\nAgent.\n\n### Done when\n- Виконано наведені AC для повноважень, дат подій, моменту внесення та незалежності позначок.\n- Картка, профіль і медична історія зберігаються; клієнтський перегляд залишається, заборонені зміни блокуються.\n- Нерозглянута пропозиція відхиляється з причиною; автоматично скасовуються лише підтверджені прийоми, що ще не почалися.\n- Гонка з бронюванням не залишає чинного майбутнього прийому після позначки.\n- Виправлення має причину та історію, враховує іншу позначку й не відновлює прийоми автоматично.\n- Відповідні тести проходять; докази TDD збережено через D01.",
+      "state": "open",
+      "user": {
+        "login": "yanchiix",
+        "name": "yanchiix",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/183918981?v=4",
+        "id": 183918981
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "feature",
+          "color": "b23027",
+          "description": ""
+        }
+      ],
+      "milestone": null,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-17T18:04:21Z",
+      "updated_at": "2026-10-17T18:04:21Z",
+      "closed_at": null,
+      "display_url": "https://github.com/yanchiix/vet-clinic/issues/14",
+      "display_title": "[F07] Смерть і припинення опіки та їх наслідки"
+    },
+    {
+      "url": "https://github.com/yanchiix/vet-clinic/issues/15",
+      "title": "[F08] Результати прийому, виправлення та історичне внесення",
+      "issue_number": 15,
+      "body": "### Purpose\nРеалізувати результати прийому, контрольовані виправлення статусів і адміністративне внесення історичних прийомів.\n\n### Source requirements\n- REQ-F-046–053.\n\n### Related AC / BDD\n- AC-F-046–053.\n- BDD-030–036.\n\n### Dependencies\n**Blocks start / prerequisites:** G02: GO; потрібні інтерфейси доступу F01, прийому F04, опису F05, рекомендацій F06 і позначок стану F07; релевантний Red T03. Ці тікети не обов’язково Done.\n\n**Required for closure / integration verification:** Green відповідної частини T03; спільні перевірки з F04–F07, цілісності опису в T04 та роботи до підтвердження картки з F03/T02; докази D01. Взаємне Done F03–F08 не вимагається.\n\n### Responsible role\nAgent.\n\n### Done when\n- Виконано AC для проведення, неявки, скасування після початку та виправлення статусів належною роллю.\n- Проведення є окремою дією призначеного лікаря після початку й за наявності коректного опису.\n- Виправлення зберігає причину, автора, час і обидва статуси; відновлення не обходить конфлікти та обмеження рекомендації.\n- Історичні прийоми відповідають правилам тривалості, хронології, стану тварини й заблокованого лікаря.\n- Відповідні тести проходять; докази TDD збережено через D01.",
+      "state": "open",
+      "user": {
+        "login": "yanchiix",
+        "name": "yanchiix",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/183918981?v=4",
+        "id": 183918981
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "feature",
+          "color": "b23027",
+          "description": ""
+        }
+      ],
+      "milestone": null,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-17T18:04:23Z",
+      "updated_at": "2026-10-17T18:04:23Z",
+      "closed_at": null,
+      "display_url": "https://github.com/yanchiix/vet-clinic/issues/15",
+      "display_title": "[F08] Результати прийому, виправлення та історичне внесення"
+    },
+    {
+      "url": "https://github.com/yanchiix/vet-clinic/issues/16",
+      "title": "[F09] Резервування, відновлення та технічний лист",
+      "issue_number": 16,
+      "body": "### Purpose\nРеалізувати погоджений контур резервування даних і вкладень, відновлення та технічного сповіщення про помилку копіювання.\n\n### Source requirements\n- REQ-F-074.\n- REQ-NF-007–009.\n\n### Related AC / BDD\n- AC-F-074, AC-NF-007–009.\n- BDD-050.\n\n### Dependencies\n**Blocks start / prerequisites:** S01; G02: GO; рішення DEP-002–003 для відповідного налаштування; Red до функціональних змін у межах issue.\n\n**Required for closure / integration verification:** результати F03/F05 для карток і файлів; протоколи резервування, технічного листа та відновлення у V01; докази D01. Повне Done V01 не потрібне.\n\n### Responsible role\nAgent + Human.\n\n### Done when\n- Реалізовано копіювання даних і вкладень щонайменше щогодини та зберігання придатних копій 7 діб окремо від основного сервера.\n- Налаштовано відновлення з допустимою втратою не більше 1 години та часом відновлення не більше 4 годин.\n- Помилка копіювання спричиняє технічний лист на налаштовану адресу протягом 5 хвилин від виявлення.\n- Функціональна поведінка має докази TDD; конфігурація й процедура готові до V01.\n- OPEN-006 збережено як обмеження; непогоджених резервних каналів або повторів не додано.",
+      "state": "open",
+      "user": {
+        "login": "yanchiix",
+        "name": "yanchiix",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/183918981?v=4",
+        "id": 183918981
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "feature",
+          "color": "b23027",
+          "description": ""
+        }
+      ],
+      "milestone": null,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-17T18:04:25Z",
+      "updated_at": "2026-10-17T18:04:25Z",
+      "closed_at": null,
+      "display_url": "https://github.com/yanchiix/vet-clinic/issues/16",
+      "display_title": "[F09] Резервування, відновлення та технічний лист"
+    },
+    {
+      "url": "https://github.com/yanchiix/vet-clinic/issues/17",
+      "title": "[F10] Український вебінтерфейс і погоджена швидкодія",
+      "issue_number": 17,
+      "body": "### Purpose\nЗабезпечити український адаптивний інтерфейс на погоджених платформах і швидкодію визначених SRS операцій.\n\n### Source requirements\n- REQ-NF-001–002, REQ-NF-004–005.\n\n### Related AC / BDD\n- AC-NF-001–002, AC-NF-004–005.\n- BDD: немає; прямі перевірки потоків і вимірювання за AC.\n\n### Dependencies\n**Blocks start / prerequisites:** G02: GO; доступні потрібні потоки або інтерфейси F01–F08 для конкретної частини роботи; Red до функціональних змін. Очікувати Done всіх F01–F08 не потрібно.\n\n**Required for closure / integration verification:** інтегровані потоки; погоджена методика DEP-001; відповідні протоколи V01 щодо платформ, екранів і швидкодії; докази D01. V01 перевіряє реалізацію до F10: Done.\n\n### Responsible role\nAgent + Human.\n\n### Done when\n- Основні потоки доступні українською без обрізаних полів і недоступних дій на погоджених екранах ПК та смартфона.\n- Забезпечено роботу в погоджених браузерах і платформах.\n- Щонайменше 95% погоджених операцій кожного типу вкладаються у визначені SRS пороги.\n- Результати V01 підтверджують AC; функціональні зміни мають докази TDD через D01.",
+      "state": "open",
+      "user": {
+        "login": "yanchiix",
+        "name": "yanchiix",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/183918981?v=4",
+        "id": 183918981
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "feature",
+          "color": "b23027",
+          "description": ""
+        }
+      ],
+      "milestone": null,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-17T18:04:27Z",
+      "updated_at": "2026-10-17T18:04:27Z",
+      "closed_at": null,
+      "display_url": "https://github.com/yanchiix/vet-clinic/issues/17",
+      "display_title": "[F10] Український вебінтерфейс і погоджена швидкодія"
+    },
+    {
+      "url": "https://github.com/yanchiix/vet-clinic/issues/18",
+      "title": "[D01] Журнали TDD, роботи агента та людських рішень",
+      "issue_number": 18,
+      "body": "### Purpose\nВести процесні докази розробки та перевірок у /logs зі збереженням історичних матеріалів SKED і SPEC-GATE.\n\n### Source requirements\n- REQ-DP-003–006.\n\n### Related AC / BDD\n- AC-DP-003–006.\n- BDD: немає; перевірка журналів, матриці, історії версій і рішень.\n\n### Dependencies\n**Blocks start / prerequisites:** S01, A01. Ведення журналів починається разом із роботами; G02 і завершення реалізації не блокують початок.\n\n**Required for closure / integration verification:** повні процесні докази охоплених робіт і людських рішень до RELEASE-GATE; узгодження з V02. Окремі записи доступні для V02/G03 до D01: Done. D01 не очікує рішення G04.\n\n### Responsible role\nAgent + Human. Human фіксує прийняття, виправлення або відхилення внеску агента.\n\n### Done when\n- За REQ-ID можна знайти команди, очікуваний Red до реалізації, Green після неї та повторний Green після рефакторингу, якщо він був.\n- Журнал роботи агента містить завдання, REQ, запропоновані зміни, перевірки й людське рішення з поясненням.\n- Збережено матеріали SKED, SPEC-GATE і версіювання; посилання на докази коректні.\n- Журнали не містять секретів і не підміняються історією медичних виправлень.\n- Для погодженого обсягу немає відсутніх обов’язкових процесних доказів.",
+      "state": "open",
+      "user": {
+        "login": "yanchiix",
+        "name": "yanchiix",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/183918981?v=4",
+        "id": 183918981
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "documentation",
+          "color": "0075ca",
+          "description": "Improvements or additions to documentation"
+        }
+      ],
+      "milestone": null,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-17T18:04:29Z",
+      "updated_at": "2026-10-17T18:04:29Z",
+      "closed_at": null,
+      "display_url": "https://github.com/yanchiix/vet-clinic/issues/18",
+      "display_title": "[D01] Журнали TDD, роботи агента та людських рішень"
+    },
+    {
+      "url": "https://github.com/yanchiix/vet-clinic/issues/19",
+      "title": "[D02] План реалізації, календарний графік і реєстр ризиків",
+      "issue_number": 19,
+      "body": "### Purpose\nПідготувати пакет планування ЛР3 для погоджених тікетів: план реалізації, календарний графік і реєстр ризиків.\n\n### Source requirements\n- Вимоги ЛР3 до етапів, залежностей, тривалостей, діаграми Ганта, критичного шляху, оцінювання людських дій і ризиків.\n- Погоджена декомпозиція та SRS v0.1 разом з ADD-001 визначають обсяг робіт.\n- REQ-DP-001 і REQ-DP-005 — пов’язані вимоги щодо погодженого обсягу та простежуваності. Вимога календарного плану й реєстру ризиків походить із ЛР3.\n\n### Related AC / BDD\n- AC-DP-001, AC-DP-005 — у частині відповідності baseline та простежуваності.\n- Для вимог із підвищеною ціною відмови використовуються їхні чинні REQ/AC/BDD.\n- Нові REQ/AC/BDD не створюються; наявні не змінюються.\n\n### Dependencies\n**Blocks start / prerequisites:**\n- S01, A01.\n- Погоджена декомпозиція з розділенням залежностей.\n- G02 та завершена реалізація для початку не потрібні.\n\n**Required for closure / integration verification:**\n- Узгоджені між собою план, графік і реєстр ризиків.\n- Звірка запланованих REQ та Ticket ID з плановою матрицею V02; завершальна частина й повний статус Done V02 не потрібні.\n- Перевірка та затвердження Human.\n\n### Responsible role\nAgent + Human. Agent готує первинний варіант; Human перевіряє, уточнює та затверджує.\n\n### Done when\n- Визначено етапи реалізації та місце погоджених тікетів і Gate.\n- Розділено передумови початку та залежності інтеграційної перевірки; немає циклічного блокування початку.\n- Наведено орієнтовні тривалості та припущення оцінювання.\n- Окремо оцінено людські дії, Review, validation і рішення Gate.\n- Підготовлено календарний графік і діаграму Ганта; визначено критичний шлях за залежностями й тривалостями.\n- Реєстр охоплює традиційні та AI-specific ризики; визначено detection / mitigation, відповідальних і зв’язки з тікетами або вимогами.\n- Для кожного ризику визначено прояв, можливі наслідки, спосіб виявлення та заходи попередження або пом’якшення.\n- Виділено вимоги з підвищеною ціною відмови, обґрунтовано наслідки та пов’язано їх із перевірками, заходами й Gate.\n- Пакет узгоджено з плановою матрицею V02.\n- Узгоджені план, календарний графік і реєстр ризиків збережено в репозиторії та зафіксовано комітом.\n- Результат пройшов Review, зауваження опрацьовано, Human затвердив пакет.\n- Пакет готовий до G02. Затвердження D02 не підміняє рішення PLAN-GATE.",
+      "state": "closed",
+      "user": {
+        "login": "yanchiix",
+        "name": "yanchiix",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/183918981?v=4",
+        "id": 183918981
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "documentation",
+          "color": "0075ca",
+          "description": "Improvements or additions to documentation"
+        }
+      ],
+      "milestone": null,
+      "state_reason": "completed",
+      "comments": 1,
+      "created_at": "2026-10-17T18:04:31Z",
+      "updated_at": "2026-10-18T13:32:00Z",
+      "closed_at": "2026-10-18T13:32:00Z",
+      "display_url": "https://github.com/yanchiix/vet-clinic/issues/19",
+      "display_title": "[D02] План реалізації, календарний графік і реєстр ризиків"
+    },
+    {
+      "url": "https://github.com/yanchiix/vet-clinic/issues/20",
+      "title": "[V01] Перевірка якості, захисту та експлуатаційних вимог",
+      "issue_number": 20,
+      "body": "### Purpose\nОтримати докази виконання нефункціональних вимог і погоджених інтеграцій через огляд, прямі запити, вимірювання та експлуатаційні вправи.\n\n### Source requirements\n- REQ-NF-001–015.\n- REQ-F-073–074.\n\n### Related AC / BDD\n- AC-NF-001–015, AC-F-073–074.\n- BDD-005, BDD-022, BDD-036, BDD-038, BDD-049–051.\n\n### Dependencies\n**Blocks start / prerequisites:** для підготовки — S01, A01. Для конкретного прогону — готова відповідна поведінка, релевантні тести та потрібні рішення DEP-001–003/DEP-005.\n\n**Required for closure / integration verification:** повний набір протоколів за охопленими AC; усунення й повторна перевірка невідповідностей. Протоколи передаються до feature-тікетів і G03 до V01: Done. Закриття feature-тікетів не є передумовою вимірювання.\n\n### Responsible role\nAgent + Human.\n\n### Done when\n- Є протоколи українського інтерфейсу, погоджених екранів, точних ОС і всіх п’яти комбінацій браузера/платформи.\n- Продуктивність оцінено за погодженою DEP-001 методикою, потрібними обсягами даних і навантаженням.\n- Перевірено часовий пояс, межі інтервалів, паролі, блокування й завершення сеансів, HTTPS, зберігання секретів та серверні права.\n- Реальний SMS отримано на контрольному українському номері; перевірено погоджений технічний лист.\n- Пробне відновлення підтверджує час до 4 годин, втрату змін не більше години та зберігання копій 7 діб окремо від основного сервера.\n- Усі охоплені AC мають докази виконання; невирішені невідповідності не приховані позначкою Done.",
+      "state": "open",
+      "user": {
+        "login": "yanchiix",
+        "name": "yanchiix",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/183918981?v=4",
+        "id": 183918981
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "verification",
+          "color": "6ad67e",
+          "description": ""
+        }
+      ],
+      "milestone": null,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-17T18:05:00Z",
+      "updated_at": "2026-10-17T18:05:00Z",
+      "closed_at": null,
+      "display_url": "https://github.com/yanchiix/vet-clinic/issues/20",
+      "display_title": "[V01] Перевірка якості, захисту та експлуатаційних вимог"
+    },
+    {
+      "url": "https://github.com/yanchiix/vet-clinic/issues/21",
+      "title": "[V02] Оновлення й аудит traceability matrix та процесних доказів",
+      "issue_number": 21,
+      "body": "### Purpose\nОновити матрицю простежуваності для ЛР3 та перевірити відповідність плану й реалізації затвердженій специфікації, вимогам TDD і процесним доказам.\n\n### Source requirements\n- REQ-DP-001–006.\n- Вимога ЛР3: додати Ticket ID для вимог, що плануються до реалізації.\n- SRS v0.1 разом з ADD-001 та погоджена декомпозиція.\n\n### Related AC / BDD\n- AC-DP-001–006.\n- Наявні AC/BDD відповідних запланованих REQ зберігаються в матриці без зміни ID або змісту.\n\n### Dependencies\n**Blocks start / prerequisites:** планова частина: S01, A01, актуальна декомпозиція з D02; для звірки — доступний проєкт плану D02, без вимоги D02: Done. Завершальна частина: доступні результати реалізації та журнали.\n\n**Required for closure / integration verification:** перевірена планова матриця з Ticket ID та завершальний аудит доказів реалізації, тестування, D01 і перевірок; історичні докази G01. D01 не обов’язково Done для аудиту його записів. G02 отримує планову частину окремо; V02 закривається після обох частин.\n\n### Responsible role\nAgent + Human.\n\n### Done when\n- До G02 для кожної вимоги, запланованої до реалізації, у traceability matrix додано відповідні Ticket ID.\n- Збережено чинні зв’язки REQ → AC → BDD; враховано ADD-001; відсутні невідомі ID, пропуски покриття та тікети без обґрунтованого джерела.\n- Планову перевірку задокументовано окремо, щоб її можна було використати в PLAN-GATE.\n- Після реалізації перевірено погоджену підставу змін, послідовність Red/Green, журнали роботи агента, людські рішення й історію версій.\n- Усі AC-DP-001–006 перевірено за належними доказами; історичний SPEC-GATE не підміняє перевірку системи.\n- Issue закривається лише після виконання обох частин.",
+      "state": "open",
+      "user": {
+        "login": "yanchiix",
+        "name": "yanchiix",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/183918981?v=4",
+        "id": 183918981
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "verification",
+          "color": "6ad67e",
+          "description": ""
+        }
+      ],
+      "milestone": null,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-17T18:05:02Z",
+      "updated_at": "2026-10-17T18:05:02Z",
+      "closed_at": null,
+      "display_url": "https://github.com/yanchiix/vet-clinic/issues/21",
+      "display_title": "[V02] Оновлення й аудит traceability matrix та процесних доказів"
+    },
+    {
+      "url": "https://github.com/yanchiix/vet-clinic/issues/22",
+      "title": "[VAL01] Людське приймання сценаріїв роботи клініки",
+      "issue_number": 22,
+      "body": "### Purpose\nПровести людське приймання погоджених потоків роботи клієнта, адміністратора й ветеринара та оцінити їх придатність для роботи клініки в межах SRS.\n\n### Source requirements\n- REQ-F-001–072.\n- REQ-NF-001–002.\n- ADD-001 у частині REQ-F-067.\n\n### Related AC / BDD\n- AC-F-001–072, AC-NF-001–002.\n- Релевантні BDD-001–048, зокрема BDD-046 разом з ADD-001.\n\n### Dependencies\n**Blocks start / prerequisites:** G03: GO; готові до приймання потоки F01–F08/F10 і результати T01–T04, V01–V02 для погодженого обсягу.\n\n**Required for closure / integration verification:** усунені зауваження, необхідні повторні перевірки та явне людське прийняття погодженого обсягу. G04 не є передумовою VAL01.\n\n### Responsible role\nHuman.\n\n### Done when\n- Human розглянув і виконав погоджені сценарії в контексті всіх трьох ролей, спираючись на AC та результати verification.\n- Оцінено основні потоки профілів, тварин, прийомів, медичної історії, направлень і рекомендацій, включно з ADD-001.\n- Перевірено придатність українського інтерфейсу на погоджених платформах.\n- Зауваження та їх вирішення зафіксовано; неприйняті сценарії не оголошено прийнятими.\n- Остаточне позитивне рішення про приймання погодженого обсягу явно зафіксоване Human.\n- Нові потреби не реалізовані як неузгоджене розширення baseline.",
+      "state": "open",
+      "user": {
+        "login": "yanchiix",
+        "name": "yanchiix",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/183918981?v=4",
+        "id": 183918981
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "validation",
+          "color": "7e1030",
+          "description": ""
+        }
+      ],
+      "milestone": null,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-17T18:05:04Z",
+      "updated_at": "2026-10-17T18:05:04Z",
+      "closed_at": null,
+      "display_url": "https://github.com/yanchiix/vet-clinic/issues/22",
+      "display_title": "[VAL01] Людське приймання сценаріїв роботи клініки"
+    },
+    {
+      "url": "https://github.com/yanchiix/vet-clinic/issues/23",
+      "title": "[G02] PLAN-GATE: готовність плану до реалізації",
+      "issue_number": 23,
+      "body": "### Purpose\nПеревірити готовність пакета планування ЛР3 до реалізації та зафіксувати рішення Human: GO / REVISE.\n\n### Source requirements\n- Процесні вимоги ЛР3 до PLAN-GATE.\n- Пов’язані вимоги: REQ-DP-001, REQ-DP-005.\n- Межі робіт: SRS v0.1 разом з ADD-001 і погоджена декомпозиція.\n\n### Related AC / BDD\n- AC-DP-001, AC-DP-005 — у відповідній частині.\n- Окремого AC або BDD для PLAN-GATE у SRS немає; нові ID не створюються.\n\n### Dependencies\n**Blocks start / prerequisites:**\n- S01, A01.\n- D02: Done — пакет планування перевірено й затверджено Human.\n- Планова частина V02 перевірена, Ticket ID додано до матриці.\n- Повне Done V02 та реалізація F01–F10 для початку Gate не потрібні.\n\n**Required for closure / integration verification:**\n- Виконані перевірки Gate.\n- Зауваження усунені; матеріали D02 і планової частини V02 актуальні та узгоджені.\n- Human зафіксував GO. За REVISE — доопрацювання та повторний Review.\n\nG01 залишається історичним SPEC-GATE і не замінює G02.\n\n### Responsible role\nHuman. Agent готує матеріали; остаточне GO / REVISE приймає лише Human.\n\n### Done when\n- Перевірено покриття запланованих REQ тікетами та Ticket ID у traceability matrix.\n- Підтверджено відсутність функціональності поза SRS v0.1 + ADD-001.\n- Перевірено логічність залежностей і відсутність циклічного блокування.\n- Перевірено наявність Gate перед критичними переходами.\n- Перевірено пакет D02: етапи, тривалості, календарний графік, Гант, критичний шлях та окремі оцінки людських дій.\n- Перевірено традиційні й AI-specific ризики та high-cost-of-failure вимоги.\n- Перевірено, що для кожного суттєвого ризику визначено прояв, наслідки, detection і mitigation.\n- Перевірено, що погоджені планові артефакти збережено в репозиторії та зафіксовано комітом.\n- Human зафіксував GO, після чого G02 переходить у Done.\n- GO передує реалізації F01–F10.",
+      "state": "open",
+      "user": {
+        "login": "yanchiix",
+        "name": "yanchiix",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/183918981?v=4",
+        "id": 183918981
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "gate",
+          "color": "182289",
+          "description": ""
+        }
+      ],
+      "milestone": null,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-17T18:05:06Z",
+      "updated_at": "2026-10-17T18:05:06Z",
+      "closed_at": null,
+      "display_url": "https://github.com/yanchiix/vet-clinic/issues/23",
+      "display_title": "[G02] PLAN-GATE: готовність плану до реалізації"
+    },
+    {
+      "url": "https://github.com/yanchiix/vet-clinic/issues/24",
+      "title": "[G03] Gate захисту доступу та цілісності медичних даних",
+      "issue_number": 24,
+      "body": "### Purpose\nПеревірити захист доступу та цілісність медичних даних перед переходом до людського приймання VAL01.\n\n### Source requirements\n- REQ-F-001–018, REQ-F-030–033, REQ-F-046–050, REQ-F-054–064, REQ-F-066–072.\n- REQ-NF-010–015.\n- ADD-001 у частині застосування REQ-F-067.\n- Процесний Gate погодженої декомпозиції ЛР3.\n\n### Related AC / BDD\n- AC-F-001–018, AC-F-030–033, AC-F-046–050, AC-F-054–064, AC-F-066–072; AC-NF-010–015.\n- BDD-001–011, BDD-018–020, BDD-028, BDD-030–034, BDD-037–043, BDD-045–048, BDD-051.\n- AC-F-067 / BDD-046 застосовуються разом із чотирма сценаріями ADD-001.\n- Окремого нового AC або BDD для Gate не вводиться.\n\n### Dependencies\n**Blocks start / prerequisites:** G02: GO; завершені INT-AUTH, INT-PET, INT-APPT та INT-MED; пакет доказів F01–F08, релевантних T01–T04/V01 і записів D01. Пакет містить: результати T02/T03 щодо критичних наслідків статусів; отримані в INT-APPT докази чотирьох сценаріїв ADD-001; докази правил REQ-F-068–072 щодо списку очікування, бронювання, повернення, вилучення та скасування рекомендацій. Повне Done V01/D01 не потрібне.\n\n**Required for closure / integration verification:** усунені й повторно перевірені блокери; Human: GO. VAL01 починається після цього рішення й не є залежністю G03.\n\n### Responsible role\nHuman. Agent готує докази; GO / REVISE приймає Human.\n\n### Done when\n- Переглянуто докази authentication, authorization та серверного доступу до медичних даних, файлів і версій.\n- Підтверджено авторство, правила виправлень і версій, узгоджене збереження вкладень та зв’язок статусу прийому з коректним медичним описом.\n- Переглянуто докази T02/T03 щодо критичних наслідків станів тварини та статусів прийому за REQ-F-030–033 і REQ-F-046–050.\n- Переглянуто чотири сценарії ADD-001 для REQ-F-067; основний інтеграційний прогін виконано в INT-APPT.\n- Переглянуто наслідки рекомендацій за REQ-F-068–072: включення та вилучення зі списку, зв’язок із бронюванням, повернення після скасування або неявки, наслідки скасування рекомендації та обмеження домашніх рекомендацій.\n- Виявлені блокуючі невідповідності усунуто й повторно перевірено.\n- Human зафіксував GO перед початком VAL01.\n- Gate використовує готові докази та не створює код або тести.",
+      "state": "open",
+      "user": {
+        "login": "yanchiix",
+        "name": "yanchiix",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/183918981?v=4",
+        "id": 183918981
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "gate",
+          "color": "182289",
+          "description": ""
+        }
+      ],
+      "milestone": null,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-17T18:05:08Z",
+      "updated_at": "2026-10-17T22:59:49Z",
+      "closed_at": null,
+      "display_url": "https://github.com/yanchiix/vet-clinic/issues/24",
+      "display_title": "[G03] Gate захисту доступу та цілісності медичних даних"
+    },
+    {
+      "url": "https://github.com/yanchiix/vet-clinic/issues/25",
+      "title": "[G04] RELEASE-GATE: готовність до випуску",
+      "issue_number": 25,
+      "body": "### Purpose\nПеревірити готовність прийнятого результату до випуску в погодженому обсязі та зафіксувати остаточне людське рішення.\n\n### Source requirements\n- REQ-F-001–074, REQ-NF-001–015, REQ-DP-001–006 у межах погодженого обсягу випуску.\n- SRS v0.1 разом з ADD-001.\n- Процесний Gate погодженої декомпозиції ЛР3.\n\n### Related AC / BDD\n- AC-F-001–074, AC-NF-001–015, AC-DP-001–006 у межах погодженого обсягу.\n- Застосовні BDD-001–051, включно з BDD-046 за ADD-001.\n- Окремого нового AC або BDD для Gate не вводиться.\n\n### Dependencies\n**Blocks start / prerequisites:** G03: GO; прийняті результати погодженого обсягу, включно з V01, завершальною частиною V02, VAL01 і D01; опрацьовані релевантні DEP/OPEN.\n\n**Required for closure / integration verification:** пакет доказів без невирішених блокерів і Human: GO. Випуск відбувається після рішення; за REVISE — доопрацювання.\n\n### Responsible role\nHuman. Agent готує пакет доказів; остаточне GO / REVISE приймає лише Human.\n\n### Done when\n- Підтверджено покриття погодженого обсягу актуальною матрицею з Ticket ID та доказами виконання AC.\n- Переглянуто результати тестів, verification та позитивне людське рішення validation.\n- Підтверджено експлуатаційну готовність, включно з резервуванням і відновленням.\n- Немає невирішених блокерів випуску; релевантні DEP/OPEN опрацьовано, відомі обмеження явно зафіксовано.\n- Human зафіксував GO до випуску.\n- Gate оцінює докази готовності та не створює код або тести.",
+      "state": "open",
+      "user": {
+        "login": "yanchiix",
+        "name": "yanchiix",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/183918981?v=4",
+        "id": 183918981
+      },
+      "assignees": null,
+      "labels": [
+        {
+          "name": "gate",
+          "color": "182289",
+          "description": ""
+        }
+      ],
+      "milestone": null,
+      "state_reason": null,
+      "comments": 0,
+      "created_at": "2026-10-17T18:05:10Z",
+      "updated_at": "2026-10-17T18:05:10Z",
+      "closed_at": null,
+      "display_url": "https://github.com/yanchiix/vet-clinic/issues/25",
+      "display_title": "[G04] RELEASE-GATE: готовність до випуску"
+    }
+  ],
+  "d02_comments": [
+    {
+      "url": "https://github.com/yanchiix/vet-clinic/issues/19#issuecomment-6250515670",
+      "body": "D02: APPROVE. Пакет планування погоджую, передаю на G02 PLAN-GATE.",
+      "user": {
+        "login": "yanchiix",
+        "name": "yanchiix",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/183918981?v=4",
+        "id": 183918981
+      },
+      "id": 6250515670,
+      "pull_request_review_id": null,
+      "in_reply_to_id": null,
+      "created_at": null,
+      "updated_at": null,
+      "review": null,
+      "side": null,
+      "line": null,
+      "start_line": null,
+      "path": null,
+      "body_html": "<p dir=\"auto\">D02: APPROVE. Пакет планування погоджую, передаю на G02 PLAN-GATE.</p>"
+    }
+  ],
+  "g02_comments": []
+}
