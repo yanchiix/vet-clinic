@@ -1,10 +1,10 @@
-# Traceability Matrix — Lab 3
+# Планова матриця простежуваності
 
 **Project:** Veterinary Clinic  
 **Baseline:** SRS v0.1 + ADD-001  
-**Updated for Lab 3:** 17.10.2026  
+**Оновлено для етапу планування реалізації:** 17.10.2026
 
-This file extends the approved SRS traceability matrix with GitHub ticket IDs. The approved baseline SRS is not modified. Existing REQ → AC → BDD links are reproduced from `spec/SRS_Vet_Clinic_v0.1.tex`; the final column adds the planned GitHub Issues created for Lab 3.
+Цей файл розширює затверджену матрицю простежуваності SRS ідентифікаторами GitHub Issues. Затверджена baseline SRS не змінюється. Наявні зв’язки REQ → AC → BDD відтворено з `spec/SRS_Vet_Clinic_v0.1.tex`; остання колонка містить заплановані GitHub Issues процесу реалізації.
 
 Local ticket IDs and GitHub issue numbers are both shown. RELEASE-GATE G04 (#25) applies to the agreed release scope as a whole and is therefore not repeated in every requirement row.
 
@@ -109,7 +109,7 @@ Local ticket IDs and GitHub issue numbers are both shown. RELEASE-GATE G04 (#25)
 ## Planning verification
 
 - Total requirements from the approved baseline: **95**.
-- Every requirement has at least one mapped Lab 3 ticket.
+- Кожна вимога має щонайменше один пов’язаний ticket етапу планування реалізації.
 - ADD-001 is applied through A01 (#2), T03 (#6), F06 (#13), G03 (#24), and the unchanged baseline identifiers REQ-F-062 / REQ-F-067 / AC-F-067 / BDD-046.
 - G02 PLAN-GATE (#23) is not passed by this file alone; it also requires the completed D02 planning package and human GO/REVISE decision.
 - G04 RELEASE-GATE (#25) is a release-wide control point and is not duplicated in all 95 rows.
