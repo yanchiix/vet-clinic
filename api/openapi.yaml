@@ -1,0 +1,2123 @@
+openapi: 3.0.3
+info:
+  title: Veterinary Clinic API
+  version: 0.1.0
+  description: >-
+    API-first contract based on approved SRS v0.1 and ADD-001. This specification
+    models only approved behavior; unresolved OPEN/DEP decisions are not filled in.
+servers:
+  - url: https://api.example.invalid
+tags:
+  - name: Доступ
+    description: Реєстрація, автентифікація та відновлення доступу.
+  - name: Клієнти
+    description: Профілі клієнтів та пошук.
+  - name: Працівники
+    description: Облікові записи працівників та їх доступність.
+  - name: Тварини
+    description: Картки тварин, перевірка даних та опіка.
+  - name: Розклад і прийоми
+    description: Робочі інтервали ветеринарів і записи на прийом.
+  - name: Медична історія
+    description: Медичні записи, вкладення та історія тварин.
+  - name: Рекомендації
+    description: Клінічні та домашні рекомендації.
+  - name: Направлення
+    description: Направлення ветеринарів.
+paths:
+  /auth/client-registrations:
+    post:
+      security: []
+      tags: [Доступ]
+      operationId: requestClientRegistrationCode
+      summary: Запросити код реєстрації клієнта
+      description: Починає самостійну реєстрацію; номер підтверджується окремою операцією. Код діє 5 хвилин, допускає до 5 спроб та повторне надсилання не раніше ніж через 60 секунд. Відповідь SMS-сервісу не є підтвердженням доставки; очікування відповіді обмежене 10 секундами.
+      x-requirement-ids: [REQ-F-002, REQ-F-003, REQ-F-006, REQ-F-073]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ClientRegistrationRequest'}
+            examples:
+              request: {value: {firstName: Олена, lastName: Коваль, phone: '+380 (67) 123-45-67'}}
+      responses:
+        '202':
+          description: Запит прийнято сервісом або очікує перевірки коду; доставка не гарантується
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/CodeRequestResult'}
+              examples:
+                accepted: {value: {status: requested, retryAfterSeconds: 60}}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '409':
+          description: Номер уже належить профілю; збіг номера не надає доступу
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ApiError'}
+              examples:
+                existing: {value: {code: phone_already_registered, message: Номер уже використовується.}}
+        '502': {$ref: '#/components/responses/ExternalServiceError'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /auth/client-registrations/confirmation:
+    post:
+      security: []
+      tags: [Доступ]
+      operationId: confirmClientRegistration
+      summary: Підтвердити реєстрацію клієнта
+      description: Чинний код одноразово підтверджує номер і завершує реєстрацію зі встановленням пароля.
+      x-requirement-ids: [REQ-F-003, REQ-F-006, REQ-NF-010]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ClientRegistrationConfirmation'}
+            examples:
+              valid: {value: {phone: '+380671234567', code: '123456', password: 'приклад-довгого-пароля'}}
+      responses:
+        '201':
+          description: Профіль створено
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ClientProfile'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '410': {$ref: '#/components/responses/ExpiredCode'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /auth/client-sessions:
+    post:
+      security: []
+      tags: [Доступ]
+      operationId: createClientSession
+      summary: Увійти як клієнт
+      description: Вхід за телефоном і паролем; SMS-код для звичайного входу не потрібен.
+      x-requirement-ids: [REQ-F-005, REQ-NF-011]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ClientLogin'}
+      responses:
+        '200':
+          description: Вхід успішний
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Session'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '429': {$ref: '#/components/responses/RateLimited'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /auth/staff-sessions:
+    post:
+      security: []
+      tags: [Доступ]
+      operationId: createStaffSession
+      summary: Увійти як працівник
+      description: Вхід за окремим логіном працівника й паролем.
+      x-requirement-ids: [REQ-F-013, REQ-NF-011]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/StaffLogin'}
+      responses:
+        '200':
+          description: Вхід успішний
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Session'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '429': {$ref: '#/components/responses/RateLimited'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /auth/client-password-resets:
+    post:
+      security: []
+      tags: [Доступ]
+      operationId: requestClientPasswordReset
+      summary: Запросити код відновлення пароля клієнта
+      description: Запитує SMS-код на зареєстрований номер; не розкриває наявність профілю. Код діє 5 хвилин, допускає до 5 спроб та повторне надсилання не раніше ніж через 60 секунд. Очікування відповіді SMS-сервісу обмежене 10 секундами; прийняття запиту не підтверджує доставку.
+      x-requirement-ids: [REQ-F-006, REQ-F-007, REQ-F-073]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PhoneRequest'}
+      responses:
+        '202':
+          description: Запит прийнято або не підтверджено сервісом
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/CodeRequestResult'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '502': {$ref: '#/components/responses/ExternalServiceError'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /auth/client-password-resets/confirmation:
+    post:
+      security: []
+      tags: [Доступ]
+      operationId: confirmClientPasswordReset
+      summary: Підтвердити код і встановити новий пароль клієнта
+      description: Після успішного відновлення всі попередні сеанси клієнта завершуються.
+      x-requirement-ids: [REQ-F-006, REQ-F-007, REQ-F-010]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PasswordResetConfirmation'}
+      responses:
+        '204': {description: Пароль змінено; попередні сеанси завершено}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '410': {$ref: '#/components/responses/ExpiredCode'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /auth/client-phone-changes:
+    post:
+      tags: [Доступ]
+      operationId: changeClientPhone
+      summary: Підтвердити новий номер і змінити телефон клієнта
+      description: Вимагає поточний пароль і чинний одноразовий SMS-код для нового вільного номера; старий номер лишається чинним до спільного успішного збереження. Код має правила REQ-F-006. При успіху попередні сеанси завершуються.
+      x-requirement-ids: [REQ-F-006, REQ-F-008, REQ-F-010, REQ-F-073]
+      security: [{ClientAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ClientPhoneChange'}
+      responses:
+        '204': {description: Номер змінено; попередні сеанси завершено}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '502': {$ref: '#/components/responses/ExternalServiceError'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /auth/client-phone-changes/code-requests:
+    post:
+      tags: [Доступ]
+      operationId: requestClientPhoneChangeCode
+      summary: Запросити SMS-код для зміни номера
+      description: Запитує код для нового номера в межах автентифікованої дії зміни номера. Код діє 5 хвилин, допускає до 5 спроб і прив’язаний до цієї дії; повторне надсилання можливе не раніше ніж через 60 секунд. Очікування відповіді SMS-сервісу обмежене 10 секундами; прийняття запиту не підтверджує доставку.
+      x-requirement-ids: [REQ-F-006, REQ-F-008, REQ-F-073]
+      security: [{ClientAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PhoneChangeCodeRequest'}
+      responses:
+        '202':
+          description: Запит прийнято або надсилання не підтверджене
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/CodeRequestResult'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '502': {$ref: '#/components/responses/ExternalServiceError'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /clients:
+    post:
+      tags: [Клієнти]
+      operationId: createClientProfile
+      summary: Створити профіль клієнта
+      description: Лише адміністратор створює профіль; наявність тварини чи доступу для входу не є передумовою.
+      x-requirement-ids: [REQ-F-001, REQ-F-002, REQ-F-004]
+      security: [{StaffAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ClientProfileInput'}
+      responses:
+        '201':
+          description: Профіль створено
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ClientProfile'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /clients/{clientId}:
+    parameters:
+      - {$ref: '#/components/parameters/ClientId'}
+    get:
+      tags: [Клієнти]
+      operationId: getClientProfile
+      summary: Отримати профіль клієнта
+      description: Доступ надається відповідно до прав клієнта або працівника; медичні дані сюди не включаються. Подання профілю містить перелік пов’язаних карток тварин.
+      x-requirement-ids: [REQ-F-001, REQ-F-011, REQ-F-034]
+      security: [{ClientAuth: []}, {StaffAuth: []}]
+      responses:
+        '200':
+          description: Профіль
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ClientProfile'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+    patch:
+      tags: [Клієнти]
+      operationId: updateClientProfile
+      summary: Змінити ім’я, прізвище або пошту клієнта
+      description: Телефон змінюється лише окремою підтвердженою процедурою; ветеринар не може редагувати профіль.
+      x-requirement-ids: [REQ-F-011]
+      security: [{ClientAuth: []}, {StaffAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ClientProfilePatch'}
+      responses:
+        '200':
+          description: Профіль змінено
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ClientProfile'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /clients/{clientId}/invitations:
+    parameters:
+      - {$ref: '#/components/parameters/ClientId'}
+    post:
+      tags: [Клієнти]
+      operationId: createClientInvitation
+      summary: Створити одноразове посилання клієнту
+      description: Лише адміністратор створює посилання. Нове посилання скасовує попереднє; передавання відбувається особисто або вручну погодженим каналом, автоматичного надсилання немає.
+      x-requirement-ids: [REQ-F-004]
+      security: [{StaffAuth: []}]
+      responses:
+        '201':
+          description: Одноразове посилання, чинне 24 години
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PasswordLink'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /auth/client-invitations/confirmation:
+    post:
+      security: []
+      tags: [Доступ]
+      operationId: setClientPasswordFromInvitation
+      summary: Встановити пароль за запрошенням
+      description: Використовує одноразове посилання для вже створеного профілю клієнта.
+      x-requirement-ids: [REQ-F-004, REQ-NF-010]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PasswordLinkCompletion'}
+      responses:
+        '204': {description: Пароль встановлено}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '410': {$ref: '#/components/responses/ExpiredLink'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /auth/client-access-recoveries:
+    post:
+      tags: [Доступ]
+      operationId: recordClientAccessRecoveryReview
+      summary: Зафіксувати особисту перевірку для відновлення доступу
+      description: Лише адміністратор зберігає результат, час та власне рішення. Негативний результат не дозволяє продовжити процес; за позитивного система створює одноразове посилання на 24 години й повертає його секретне значення для передачі клієнту. Копії й реквізити документа не зберігаються; достатність доказів визначається поза цим контрактом за DEP-004.
+      x-requirement-ids: [REQ-F-009]
+      security: [{StaffAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/RecoveryReviewInput'}
+      responses:
+        '201':
+          description: Результат перевірки зафіксовано
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RecoveryReview'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /client-access-recoveries/{recoveryId}/phone-confirmation:
+    parameters:
+      - {$ref: '#/components/parameters/RecoveryId'}
+    post:
+      security: []
+      tags: [Доступ]
+      operationId: confirmRecoveryPhone
+      summary: Підтвердити новий номер у відновленні
+      description: SMS-код і підтвердження прив’язані до профілю, номера й операції та чинного одноразового посилання. Код діє 5 хвилин, допускає до 5 спроб; повторне надсилання можливе не раніше ніж через 60 секунд.
+      x-requirement-ids: [REQ-F-006, REQ-F-009, REQ-F-073]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/RecoveryPhoneConfirmation'}
+      responses:
+        '200':
+          description: Номер підтверджено до завершення строку посилання
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RecoveryReview'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '410': {$ref: '#/components/responses/ExpiredCode'}
+        '502': {$ref: '#/components/responses/ExternalServiceError'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /client-access-recoveries/{recoveryId}/phone-code-requests:
+    parameters:
+      - {$ref: '#/components/parameters/RecoveryId'}
+    post:
+      security: []
+      tags: [Доступ]
+      operationId: requestRecoveryPhoneCode
+      summary: Запросити SMS-код для відновлення доступу
+      description: Запитує код для нового вільного номера в межах конкретної позитивної перевірки й чинного одноразового посилання. Код діє 5 хвилин, допускає до 5 спроб; повторне надсилання можливе не раніше ніж через 60 секунд. Очікування SMS-сервісу — до 10 секунд; доставка не гарантується. Повторний запит замінює лише код, не посилання.
+      x-requirement-ids: [REQ-F-006, REQ-F-009, REQ-F-073]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/RecoveryPhoneCodeRequest'}
+      responses:
+        '202':
+          description: Запит прийнято або надсилання не підтверджене
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/CodeRequestResult'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '410': {$ref: '#/components/responses/ExpiredLink'}
+        '502': {$ref: '#/components/responses/ExternalServiceError'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /client-access-recoveries/{recoveryId}/completion:
+    parameters:
+      - {$ref: '#/components/parameters/RecoveryId'}
+    post:
+      security: []
+      tags: [Доступ]
+      operationId: completeClientAccessRecovery
+      summary: Завершити відновлення доступу клієнта
+      description: За чинним посиланням і підтвердженим для цієї операції вільним номером атомарно змінює номер та пароль; перед збереженням номер перевіряється повторно. До успіху старі дані не змінюються.
+      x-requirement-ids: [REQ-F-009, REQ-F-010, REQ-NF-010]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/RecoveryCompletion'}
+      responses:
+        '204': {description: Доступ відновлено; попередні сеанси завершено}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '410': {$ref: '#/components/responses/ExpiredLink'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /staff-accounts:
+    post:
+      tags: [Працівники]
+      operationId: createStaffAccount
+      summary: Створити обліковий запис працівника
+      description: Лише адміністратор створює адміністратора або ветеринара; відкрита реєстрація працівників відсутня.
+      x-requirement-ids: [REQ-F-012, REQ-F-013, REQ-F-018]
+      security: [{StaffAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/StaffAccountInput'}
+      responses:
+        '201':
+          description: Обліковий запис створено
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/StaffAccount'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /staff-accounts/{staffId}:
+    parameters:
+      - {$ref: '#/components/parameters/StaffId'}
+    patch:
+      tags: [Працівники]
+      operationId: changeStaffAccountAvailability
+      summary: Заблокувати або розблокувати працівника
+      description: Лише адміністратор блокує або розблоковує працівника. Роль незмінна. Блокування завершує активні сеанси; заборонено самоблокування та блокування останнього незаблокованого адміністратора, який установив пароль.
+      x-requirement-ids: [REQ-F-015, REQ-F-016, REQ-F-017, REQ-F-018]
+      security: [{StaffAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/StaffAvailabilityChange'}
+      responses:
+        '200':
+          description: Запис працівника змінено
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/StaffAccount'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /staff-accounts/{staffId}/password-links:
+    parameters:
+      - {$ref: '#/components/parameters/StaffId'}
+    post:
+      tags: [Працівники]
+      operationId: createStaffPasswordLink
+      summary: Створити одноразове посилання працівнику
+      description: Лише адміністратор створює посилання для первинного пароля або відновлення; нове скасовує попереднє. OPEN-003 не розв’язується цим API.
+      x-requirement-ids: [REQ-F-014]
+      security: [{StaffAuth: []}]
+      responses:
+        '201':
+          description: Посилання чинне 24 години
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PasswordLink'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /auth/staff-password-links/confirmation:
+    post:
+      security: []
+      tags: [Доступ]
+      operationId: setStaffPasswordFromLink
+      summary: Встановити пароль працівника за посиланням
+      description: Працівник сам установлює первинний або новий пароль; відновлення завершує попередні сеанси.
+      x-requirement-ids: [REQ-F-014, REQ-F-010, REQ-NF-010]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PasswordLinkCompletion'}
+      responses:
+        '204': {description: Пароль встановлено; при відновленні попередні сеанси завершено}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '410': {$ref: '#/components/responses/ExpiredLink'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /clients/search:
+    get:
+      tags: [Клієнти]
+      operationId: searchClients
+      summary: Шукати клієнтів
+      description: Пошук за повним нормалізованим телефоном або частиною імені чи прізвища без урахування регістру.
+      x-requirement-ids: [REQ-F-034]
+      security: [{StaffAuth: []}]
+      parameters:
+        - name: phone
+          in: query
+          required: false
+          schema: {type: string, pattern: '^\+380[0-9]{9}$'}
+          description: Повний нормалізований номер.
+        - name: namePart
+          in: query
+          required: false
+          schema: {type: string}
+          description: Частина імені або прізвища.
+      responses:
+        '200':
+          description: Збіги пошуку
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ClientSearchResults'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /pets:
+    get:
+      tags: [Тварини]
+      operationId: searchPets
+      summary: Шукати тварин
+      description: 'Для працівників: частина клички без урахування регістру або повний мікрочип; потрібен принаймні один із цих критеріїв; повертає лише передбачені пошукові поля.'
+      x-requirement-ids: [REQ-F-035]
+      security: [{StaffAuth: []}]
+      parameters:
+        - name: namePart
+          in: query
+          required: false
+          schema: {type: string}
+        - name: microchip
+          in: query
+          required: false
+          schema: {type: string, pattern: '^[0-9]{15}$'}
+      responses:
+        '200':
+          description: Збіги, включно з померлими тваринами та припиненою опікою
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PetSearchResults'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+    post:
+      tags: [Тварини]
+      operationId: createPet
+      summary: Створити картку тварини
+      description: Клієнтське створення вимагає явного passportAvailableConfirmed=true і створює непідтверджені дані; працівник (адміністратор або ветеринар) створює картку зі слів власника як підтверджену, clientId обов’язковий для працівника. Значення breed/breedUnknown і birthDate/birthYear/birthUnknown взаємовиключні за REQ-F-019. Дата і рік народження не можуть бути майбутніми за Europe/Kyiv. Дублі мікрочипа відхиляються без розкриття даних іншої картки. Непідтверджені дані самі по собі не блокують перший запис.
+      x-requirement-ids: [REQ-F-019, REQ-F-020, REQ-F-021, REQ-F-022, REQ-F-023, REQ-F-025]
+      security: [{ClientAuth: []}, {StaffAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PetCreate'}
+      responses:
+        '201':
+          description: Картку створено
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Pet'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /pets/{petId}:
+    parameters:
+      - {$ref: '#/components/parameters/PetId'}
+    get:
+      tags: [Тварини]
+      operationId: getPet
+      summary: Отримати картку тварини
+      description: Права перегляду залежать від поточної/колишньої опіки та ролі; адміністратор не отримує медичний зміст через картку.
+      x-requirement-ids: [REQ-F-021, REQ-F-031, REQ-F-035]
+      security: [{ClientAuth: []}, {StaffAuth: []}]
+      responses:
+        '200':
+          description: Картка без медичного змісту
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Pet'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+    patch:
+      tags: [Тварини]
+      operationId: updateUnconfirmedPet
+      summary: Змінити дозволені непідтверджені дані картки
+      description: >-
+        Клієнт може напряму змінювати основні дані лише до першого підтвердження і лише за відсутності смерті/припинення опіки. Після підтвердження клієнт використовує пропозицію змін. Адміністратор і ветеринар можуть напряму виправляти підтверджені дані: якщо змінене поле входить у нерозглянуту пропозицію, вся пропозиція відхиляється як неактуальна з причиною; інші зміни її не закривають. Після смерті/припинення опіки клієнт не редагує картку незалежно від підтвердження.
+      x-requirement-ids: [REQ-F-022, REQ-F-028, REQ-F-029, REQ-F-031]
+      security: [{ClientAuth: []}, {StaffAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PetPatch'}
+      responses:
+        '200':
+          description: Дані картки змінено
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Pet'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /pets/{petId}/change-proposals:
+    parameters:
+      - {$ref: '#/components/parameters/PetId'}
+    post:
+      tags: [Тварини]
+      operationId: createPetChangeProposal
+      summary: Подати пропозицію зміни картки
+      description: Дозволена одна нерозглянута пропозиція; чинні значення не змінюються до рішення працівника. Клієнт не може подати пропозицію після смерті або припинення опіки.
+      x-requirement-ids: [REQ-F-026]
+      security: [{ClientAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PetChangeProposalInput'}
+      responses:
+        '201':
+          description: Пропозицію створено
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PetChangeProposal'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /pets/{petId}/change-proposals/{proposalId}/decision:
+    parameters:
+      - {$ref: '#/components/parameters/PetId'}
+      - {$ref: '#/components/parameters/ProposalId'}
+    post:
+      tags: [Тварини]
+      operationId: decidePetChangeProposal
+      summary: Схвалити або відхилити пропозицію
+      description: Рішення охоплює всю пропозицію; причина відхилення обов’язкова.
+      x-requirement-ids: [REQ-F-027, REQ-F-029]
+      security: [{StaffAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ProposalDecision'}
+      responses:
+        '200':
+          description: Рішення збережено
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PetChangeProposal'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409':
+          description: Інший працівник уже зберіг рішення; повертається актуальний стан пропозиції без перезапису
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PetChangeProposal'}
+              examples:
+                alreadyReviewed: {value: {id: prop-15, petId: pet-41, proposedData: {name: Мурка}, decision: rejected, rejectionReason: Дані перевірено раніше.}}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /pets/{petId}/verification:
+    parameters:
+      - {$ref: '#/components/parameters/PetId'}
+    post:
+      tags: [Тварини]
+      operationId: verifyPetData
+      summary: Перевірити основні дані тварини
+      description: Адміністратор або ветеринар виправляє дані перед першим підтвердженням або залишає їх непідтвердженими з поясненням для клієнта; окремого стану відхиленої картки немає. confirmed=true дозволений лише з достатніми даними; confirmed=false вимагає explanation.
+      x-requirement-ids: [REQ-F-024]
+      security: [{StaffAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PetVerification'}
+      responses:
+        '200':
+          description: Дані перевірено
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Pet'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /pets/{petId}/deaths:
+    parameters:
+      - {$ref: '#/components/parameters/PetId'}
+    post:
+      tags: [Тварини]
+      operationId: recordPetDeath
+      summary: Зафіксувати смерть тварини
+      description: Окрема від припинення опіки подія. Зберігається дата й відомий час події або лише дата та момент внесення. Майбутня дата/час у Europe/Kyiv відхиляється. Подія діє одразу; нерозглянута пропозиція відхиляється з причиною, а лише підтверджені ще не розпочаті прийоми скасовуються з видимою клієнту причиною; проведені або вже розпочаті не змінюються.
+      x-requirement-ids: [REQ-F-030, REQ-F-031, REQ-F-032]
+      security: [{StaffAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/AnimalEventInput'}
+      responses:
+        '201':
+          description: Подію зафіксовано; застосовано визначені SRS наслідки
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AnimalEvent'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /pets/{petId}/ownership-closures:
+    parameters:
+      - {$ref: '#/components/parameters/PetId'}
+    post:
+      tags: [Тварини]
+      operationId: recordOwnershipClosure
+      summary: Зафіксувати припинення опіки
+      description: Незалежна від смерті подія; зберігається дата й відомий час або лише дата та момент внесення. Майбутня дата/час у Europe/Kyiv відхиляється. Подія діє одразу; нерозглянута пропозиція відхиляється з причиною, а лише підтверджені ще не розпочаті прийоми скасовуються з видимою клієнту причиною; проведені або вже розпочаті не змінюються.
+      x-requirement-ids: [REQ-F-030, REQ-F-031, REQ-F-032]
+      security: [{StaffAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/AnimalEventInput'}
+      responses:
+        '201':
+          description: Подію зафіксовано; застосовано визначені SRS наслідки
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AnimalEvent'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /pets/{petId}/deaths/correction:
+    parameters:
+      - {$ref: '#/components/parameters/PetId'}
+    post:
+      tags: [Тварини]
+      operationId: correctPetDeath
+      summary: Виправити позначку смерті
+      description: Виправлення помилкової позначки з обов’язковою причиною та історією; стан припинення опіки не змінюється. Скасовані прийоми автоматично не відновлюються; запис і пропозиції змін знову дозволяються лише за поточного власника та відсутності смерті.
+      x-requirement-ids: [REQ-F-033]
+      security: [{StaffAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/EventCorrection'}
+      responses:
+        '200':
+          description: Позначку виправлено
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AnimalEvent'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /pets/{petId}/ownership-closures/correction:
+    parameters:
+      - {$ref: '#/components/parameters/PetId'}
+    post:
+      tags: [Тварини]
+      operationId: correctOwnershipClosure
+      summary: Виправити позначку припинення опіки
+      description: Виправлення помилкової позначки з обов’язковою причиною та історією; стан смерті не змінюється. Скасовані прийоми автоматично не відновлюються; запис і пропозиції змін знову дозволяються лише за поточного власника та відсутності смерті.
+      x-requirement-ids: [REQ-F-033]
+      security: [{StaffAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/EventCorrection'}
+      responses:
+        '200':
+          description: Позначку виправлено
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AnimalEvent'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /staff-schedules/{staffId}/{date}:
+    parameters:
+      - {$ref: '#/components/parameters/StaffId'}
+      - name: date
+        in: path
+        required: true
+        schema: {type: string, format: date}
+    put:
+      tags: [Розклад і прийоми]
+      operationId: setStaffScheduleForDate
+      summary: Задати робочі інтервали на конкретну дату
+      description: Лише адміністратор. Зміна перевіряє тільки підтверджені прийоми, які ще не почалися; кожен має повністю вміщатися в нові інтервали, але не зобов’язаний збігатися з новою 20-хвилинною сіткою. Час прийомів не зсувається; при перешкоді розклад не змінюється і повертається запис. Історичні прийоми не блокують зміну. Повторюваного тижневого розкладу немає.
+      x-requirement-ids: [REQ-F-036, REQ-F-038]
+      security: [{StaffAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/WorkIntervals'}
+            examples:
+              splitDay: {value: {intervals: [{start: '09:00', end: '13:00'}, {start: '14:00', end: '18:00'}]}}
+      responses:
+        '200':
+          description: Розклад на дату збережено
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/WorkIntervals'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '409':
+          description: Наявний майбутній підтверджений прийом не вміщується; розклад не змінено
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ScheduleConflict'}
+              examples:
+                blockingAppointment: {value: {code: schedule_conflict, message: Інтервал не вміщує підтверджений прийом., appointmentIds: [apt-204]}}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /appointment-slots:
+    get:
+      tags: [Розклад і прийоми]
+      operationId: listAppointmentSlots
+      summary: Отримати доступні інтервали прийому
+      description: Формуються послідовно по 20 хвилин від початку інтервалу, повністю в його межах, без перетину та з виключенням зайнятого часу. Час Europe/Kyiv; неоднозначний або неіснуючий місцевий час не повертається.
+      x-requirement-ids: [REQ-F-037, REQ-F-039, REQ-NF-003]
+      security: [{ClientAuth: []}, {StaffAuth: []}]
+      parameters:
+        - {name: date, in: query, required: true, schema: {type: string, format: date}}
+        - {name: veterinarianId, in: query, required: false, schema: {type: string}}
+      responses:
+        '200':
+          description: Доступні слоти
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AppointmentSlotList'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /appointments:
+    get:
+      tags: [Розклад і прийоми]
+      operationId: listAppointments
+      summary: Отримати прийоми
+      description: Подання доступне відповідно до ролі та пов’язаного клієнта/тварини; медичні поля не включаються до адміністративної організаційної відповіді.
+      x-requirement-ids: [REQ-F-039, REQ-F-043, REQ-F-046, REQ-F-047, REQ-F-064]
+      security: [{ClientAuth: []}, {StaffAuth: []}]
+      parameters:
+        - {name: petId, in: query, required: false, schema: {type: string}}
+        - {name: clientId, in: query, required: false, schema: {type: string}}
+        - {name: from, in: query, required: false, schema: {type: string, format: date-time}}
+        - {name: to, in: query, required: false, schema: {type: string, format: date-time}}
+      responses:
+        '200':
+          description: Дозволене подання прийомів
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AppointmentList'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+    post:
+      tags: [Розклад і прийоми]
+      operationId: createAppointment
+      summary: Створити прийом
+      description: Звичайний прийом створює клієнт для своєї тварини або адміністратор для клієнта; історичний прийом може створювати лише адміністратор і він залишається «Підтвердженим». Тривалість — 20 хвилин. Час інтерпретується за Europe/Kyiv; майбутнє звичайне бронювання, доступність, права власника й блокування лікаря перевіряються сервером. Історичний прийом може бути поза розкладом, але підлягає правилам хронології смерті/опіки та конфліктів. `idempotencyKey` ідентифікує повтор тієї самої спроби. За рекомендацією допускається не більш як один пов’язаний прийом у статусі «Підтверджено» або «Проведений»; домашня рекомендація не приймається для запису. Конфлікти перевіряються атомарно.
+      x-requirement-ids: [REQ-F-039, REQ-F-040, REQ-F-041, REQ-F-042, REQ-F-050, REQ-F-051, REQ-F-052, REQ-F-053, REQ-F-069]
+      security: [{ClientAuth: []}, {StaffAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/AppointmentCreate'}
+      responses:
+        '201':
+          description: Прийом створено зі статусом «Підтверджено»
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Appointment'}
+        '200':
+          description: Повтор тієї самої успішної спроби; повернуто той самий прийом
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Appointment'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /appointments/{appointmentId}:
+    parameters:
+      - {$ref: '#/components/parameters/AppointmentId'}
+    get:
+      tags: [Розклад і прийоми]
+      operationId: getAppointment
+      summary: Отримати прийом
+      description: Відповідь містить лише поля, дозволені ролі запитувача.
+      x-requirement-ids: [REQ-F-043, REQ-F-046, REQ-F-047, REQ-F-064]
+      security: [{ClientAuth: []}, {StaffAuth: []}]
+      responses:
+        '200':
+          description: Прийом
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Appointment'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+    patch:
+      tags: [Розклад і прийоми]
+      operationId: rescheduleAppointment
+      summary: Перенести прийом
+      description: Клієнт переносить власний прийом, адміністратор — прийом клініки; ветеринар не керує бронюванням. Лише до початку первісного прийому і лише на майбутній час за Europe/Kyiv. Новий час резервується до звільнення старого. Зміна лікаря дозволена лише без пов’язаного медичного запису та до доступного незаблокованого ветеринара. Зв’язок і скасований стан рекомендації зберігаються.
+      x-requirement-ids: [REQ-F-043, REQ-F-044]
+      security: [{ClientAuth: []}, {StaffAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/AppointmentReschedule'}
+      responses:
+        '200':
+          description: Прийом перенесено
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Appointment'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /appointments/{appointmentId}/cancellation:
+    parameters:
+      - {$ref: '#/components/parameters/AppointmentId'}
+    post:
+      tags: [Розклад і прийоми]
+      operationId: cancelAppointment
+      summary: Скасувати прийом до початку
+      description: Клієнт скасовує запис своєї тварини, адміністратор — будь-який; лікар бронюваннями не керує.
+      x-requirement-ids: [REQ-F-045, REQ-F-070]
+      security: [{ClientAuth: []}, {StaffAuth: []}]
+      responses:
+        '200':
+          description: Прийом скасовано; застосовано правила повернення рекомендації
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Appointment'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /appointments/{appointmentId}/status:
+    parameters:
+      - {$ref: '#/components/parameters/AppointmentId'}
+    patch:
+      tags: [Розклад і прийоми]
+      operationId: changeAppointmentStatus
+      summary: Змінити статус прийому за дозволеним правилом
+      description: Лише призначений ветеринар позначає «Проведений», після початку та з коректним описом; збереження опису саме статус не змінює. Адміністратор може позначити «Неявка» лише після початку. Лише адміністратор скасовує після початку непроведений прийом, з обов’язковою видимою клієнту причиною. Адміністратор виправляє власні й чужі «Скасовано»/«Неявка» до «Підтверджено»; лише призначений ветеринар виправляє помилковий «Проведений». Виправлення вимагає причину й зберігає автора, час, попередній і новий статус. Відновлення повторно виконує перевірки REQ-F-050. Неявка/скасування повертають чинну клінічну рекомендацію лише якщо стан тварини дозволяє; виправлення «Проведений» до «Підтверджено» її не повертає.
+      x-requirement-ids: [REQ-F-046, REQ-F-047, REQ-F-048, REQ-F-049, REQ-F-050, REQ-F-070]
+      security: [{StaffAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/AppointmentStatusChange'}
+      responses:
+        '200':
+          description: Статус змінено
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Appointment'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /appointments/{appointmentId}/medical-records:
+    parameters:
+      - {$ref: '#/components/parameters/AppointmentId'}
+    post:
+      tags: [Медична історія]
+      operationId: createAppointmentMedicalRecord
+      summary: Зберегти опис огляду й лікування прийому
+      description: Лише призначений ветеринар; причина звернення й результати огляду обов’язкові. Створення медичного запису саме по собі не змінює статус прийому.
+      x-requirement-ids: [REQ-F-046, REQ-F-055, REQ-F-063]
+      security: [{StaffAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/AppointmentMedicalRecordInput'}
+      responses:
+        '201':
+          description: Медичний запис створено
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/MedicalRecord'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /pets/{petId}/medical-records:
+    parameters:
+      - {$ref: '#/components/parameters/PetId'}
+    get:
+      tags: [Медична історія]
+      operationId: listPetMedicalRecords
+      summary: Переглянути медичну історію тварини
+      description: Клієнт і ветеринари мають передбачений доступ; адміністратор не отримує діагнози, лікування, вкладення чи версії медичних записів.
+      x-requirement-ids: [REQ-F-054, REQ-F-062]
+      security: [{ClientAuth: []}, {StaffAuth: []}]
+      responses:
+        '200':
+          description: Дозволені медичні записи
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/MedicalRecordList'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+    post:
+      tags: [Медична історія]
+      operationId: createPetMedicalRecord
+      summary: Додати медичний запис без обов’язкового зв’язку з прийомом
+      description: Лише ветеринар додає результати аналізів/обстежень та історичні процедури з іншого джерела без обов’язкового прийому. Для аналізу/обстеження потрібні назва й дата; висновок і вкладення необов’язкові. Для процедури клініки потрібні вид, дата та препарат. Для історичної процедури потрібне джерело; невідомі дані позначаються явно, а невідома точна дата не є датою процедури.
+      x-requirement-ids: [REQ-F-056, REQ-F-061, REQ-F-062]
+      security: [{StaffAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/StandaloneMedicalRecordInput'}
+      responses:
+        '201':
+          description: Запис створено
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/MedicalRecord'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /medical-records/{recordId}:
+    parameters:
+      - {$ref: '#/components/parameters/RecordId'}
+    get:
+      tags: [Медична історія]
+      operationId: getMedicalRecord
+      summary: Отримати медичний запис і його версії
+      description: Запис і попередні версії доступні клієнту з правами на картку та всім ветеринарам. Адміністратор не отримує медичного змісту; обмеження перевіряється сервером для кожного запиту.
+      x-requirement-ids: [REQ-F-054, REQ-F-058, REQ-F-059, REQ-F-060]
+      security: [{ClientAuth: []}, {StaffAuth: []}]
+      responses:
+        '200':
+          description: Запис і доступна історія версій
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/MedicalRecord'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+    patch:
+      tags: [Медична історія]
+      operationId: reviseMedicalRecord
+      summary: Виправити або позначити помилковим медичний запис
+      description: Лише автор; причина обов’язкова, попередня версія зберігається. Для збереження вкладень нова версія публікується лише після успішного завантаження всіх вибраних файлів; невдала спроба не змінює поточну версію, вилучені чи замінені вкладення лишаються в попередніх версіях. Остаточне видалення й коригування іншим автором не передбачені.
+      x-requirement-ids: [REQ-F-059, REQ-F-060]
+      security: [{StaffAuth: []}]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema: {$ref: '#/components/schemas/MedicalRecordRevisionWithAttachments'}
+            encoding:
+              record: {contentType: application/json}
+              files: {contentType: 'application/pdf, image/jpeg, image/png'}
+      responses:
+        '200':
+          description: Нову версію збережено узгоджено з усіма вкладеннями
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/MedicalRecord'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '413': {$ref: '#/components/responses/PayloadTooLarge'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /medical-records/{recordId}/versions/{versionId}/attachments/{attachmentId}:
+    parameters:
+      - {$ref: '#/components/parameters/RecordId'}
+      - {$ref: '#/components/parameters/VersionId'}
+      - {$ref: '#/components/parameters/AttachmentId'}
+    get:
+      tags: [Медична історія]
+      operationId: getMedicalAttachment
+      summary: Отримати вкладення версії медичного запису
+      description: Вкладення та версія доступні клієнту з правами на картку та всім ветеринарам; адміністратор не отримує файл. Серверна перевірка прав застосовується до кожного запиту, незалежно від прямого URL.
+      x-requirement-ids: [REQ-F-054, REQ-F-057, REQ-F-058]
+      security: [{ClientAuth: []}, {StaffAuth: []}]
+      responses:
+        '200':
+          description: Бінарний файл
+          content:
+            application/pdf: {schema: {type: string, format: binary}}
+            image/jpeg: {schema: {type: string, format: binary}}
+            image/png: {schema: {type: string, format: binary}}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /pets/{petId}/medical-records/with-attachments:
+    parameters:
+      - {$ref: '#/components/parameters/PetId'}
+    post:
+      tags: [Медична історія]
+      operationId: createMedicalRecordWithAttachments
+      summary: Створити версію медичного запису разом із вкладеннями
+      description: Лише ветеринар створює запис результату разом із вкладеннями. Контракт публікує запис лише після успішного завантаження всіх вибраних файлів; невдала спроба не змінює збережену версію. До 5 файлів у версії, кожен до 10 000 000 байтів включно; дозволені PDF, JPEG, PNG з перевіркою фактичного формату.
+      x-requirement-ids: [REQ-F-056, REQ-F-057, REQ-F-058]
+      security: [{StaffAuth: []}]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema: {$ref: '#/components/schemas/MedicalRecordWithAttachments'}
+            encoding:
+              record: {contentType: application/json}
+              files: {contentType: 'application/pdf, image/jpeg, image/png'}
+      responses:
+        '201':
+          description: Запис і всі вкладення збережені узгоджено
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/MedicalRecord'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '413': {$ref: '#/components/responses/PayloadTooLarge'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /pets/{petId}/referrals:
+    parameters:
+      - {$ref: '#/components/parameters/PetId'}
+    post:
+      tags: [Направлення]
+      operationId: createReferral
+      summary: Створити направлення
+      description: Ветеринар задає дату видачі, призначене та напрямок звернення; установа і зв’язок із прийомом необов’язкові. Рекомендація автоматично не створюється.
+      x-requirement-ids: [REQ-F-065]
+      security: [{StaffAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ReferralInput'}
+      responses:
+        '201':
+          description: Направлення створено
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Referral'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /recommendations:
+    get:
+      tags: [Рекомендації]
+      operationId: listAppointmentWaitingRecommendations
+      summary: Отримати адміністративний список очікування запису
+      description: Лише адміністратор переглядає чинні рекомендації «У клініці», для яких немає підтвердженого чи проведеного прийому та дозволено запис. Рядок містить лише необхідність клінічного повторного прийому/процедури й організаційні поля; діагноз, лікування, домашні та скасовані рекомендації не повертаються. Минулість рекомендованої дати сама не вилучає рекомендацію.
+      x-requirement-ids: [REQ-F-064, REQ-F-068]
+      security: [{StaffAuth: []}]
+      responses:
+        '200':
+          description: Організаційні рядки списку очікування без медичного змісту
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/WaitingRecommendationList'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+    post:
+      tags: [Рекомендації]
+      operationId: createRecommendation
+      summary: Створити рекомендацію
+      description: Лише ветеринар створює рекомендацію. Для формату «У клініці» потрібні окреме поле рекомендації щодо запису та конкретна дата або цілий календарний строк від явно обраного прийому чи виконаної процедури. Для формату «Вдома» потрібні інструкція та конкретна рекомендована дата; онлайн-запис і клієнтська відмітка виконання відсутні. Відносний строк — ціле число днів від 1 без верхньої межі. За ADD-001 процедура є підставою лише за відомої точної дати; без неї дозволена конкретна дата або інша підстава з відомою датою. Зміна дати підстави не перераховує рекомендацію.
+      x-requirement-ids: [REQ-F-066, REQ-F-067, REQ-F-072]
+      security: [{StaffAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/RecommendationInput'}
+            examples:
+              relativeToKnownProcedure: {value: {petId: pet-41, format: У клініці, recommendationText: Повторний огляд, bookingGuidance: Записатися у визначений строк, dateBasis: {type: performedProcedure, id: proc-18}, relativeDays: 10}}
+              concreteDate: {value: {petId: pet-41, format: Вдома, recommendationText: Спостерігати за апетитом, recommendedDate: '2026-11-10', homeInstruction: Давати воду у вільному доступі}}
+      responses:
+        '201':
+          description: Рекомендацію створено
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Recommendation'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /pets/{petId}/recommendations:
+    parameters:
+      - {$ref: '#/components/parameters/PetId'}
+    get:
+      tags: [Рекомендації]
+      operationId: listPetRecommendations
+      summary: Переглянути рекомендації тварини
+      description: Клієнт бачить власні рекомендації, включно з домашніми інструкціями; ветеринари бачать рекомендації в межах медичної частини. Адміністратору це подання недоступне; він отримує лише організаційні поля клінічних рекомендацій через список очікування. Домашня рекомендація не має дії онлайн-запису чи позначки виконання.
+      x-requirement-ids: [REQ-F-064, REQ-F-066, REQ-F-072]
+      security: [{ClientAuth: []}, {StaffAuth: []}]
+      responses:
+        '200':
+          description: Дозволені рекомендації без розкриття адміністраторам медичного змісту
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RecommendationList'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /recommendations/{recommendationId}:
+    parameters:
+      - {$ref: '#/components/parameters/RecommendationId'}
+    patch:
+      tags: [Рекомендації]
+      operationId: reviseRecommendation
+      summary: Виправити рекомендацію
+      description: Лише автор-ветеринар, з обов’язковою причиною й збереженням попередньої версії. За пов’язаного підтвердженого або проведеного прийому змінювати формат не можна. Зміна дати базової події не перераховує рекомендацію автоматично; оновлена рекомендація має відповідати полям обраного формату.
+      x-requirement-ids: [REQ-F-066, REQ-F-067]
+      security: [{StaffAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/RecommendationRevision'}
+      responses:
+        '200':
+          description: Нову версію збережено
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Recommendation'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /recommendations/{recommendationId}/cancellation:
+    parameters:
+      - {$ref: '#/components/parameters/RecommendationId'}
+    post:
+      tags: [Рекомендації]
+      operationId: cancelRecommendation
+      summary: Скасувати рекомендацію
+      description: Лише автор-ветеринар і з обов’язковою причиною; рекомендація зберігається в історії та більше не очікує запису. Вже створений прийом не змінюється, а його подальше скасування чи неявка не повертають цю рекомендацію до списку.
+      x-requirement-ids: [REQ-F-071]
+      security: [{StaffAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CancellationReason'}
+      responses:
+        '200':
+          description: Рекомендацію скасовано й залишено в історії
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Recommendation'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+components:
+  securitySchemes:
+    ClientAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Opaque
+    StaffAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Opaque
+  parameters:
+    ClientId: {name: clientId, in: path, required: true, schema: {type: string}}
+    StaffId: {name: staffId, in: path, required: true, schema: {type: string}}
+    PetId: {name: petId, in: path, required: true, schema: {type: string}}
+    ProposalId: {name: proposalId, in: path, required: true, schema: {type: string}}
+    AppointmentId: {name: appointmentId, in: path, required: true, schema: {type: string}}
+    RecordId: {name: recordId, in: path, required: true, schema: {type: string}}
+    VersionId: {name: versionId, in: path, required: true, schema: {type: string}}
+    AttachmentId: {name: attachmentId, in: path, required: true, schema: {type: string}}
+    RecommendationId: {name: recommendationId, in: path, required: true, schema: {type: string}}
+    RecoveryId: {name: recoveryId, in: path, required: true, schema: {type: string}}
+  responses:
+    UnexpectedError:
+      description: Непередбачена помилка API
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ApiError'}
+    BadRequest:
+      description: Некоректний запит або порушення визначених вимогами правил
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ApiError'}
+          examples:
+            invalid: {value: {code: invalid_request, message: Запит не відповідає вимогам.}}
+    Unauthorized:
+      description: Невірні облікові дані або потрібен вхід
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ApiError'}
+          examples:
+            denied: {value: {code: unauthorized, message: Не вдалося виконати вхід.}}
+    Forbidden:
+      description: Операція недоступна для цієї ролі або власника
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ApiError'}
+          examples:
+            forbidden: {value: {code: forbidden, message: Дію заборонено.}}
+    NotFound:
+      description: Ресурс не знайдено
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ApiError'}
+    Conflict:
+      description: Конфлікт унікальності, стану або конкурентної операції
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ApiError'}
+          examples:
+            conflict: {value: {code: conflict, message: Операцію неможливо виконати для поточного стану.}}
+    RateLimited:
+      description: Тимчасове блокування входу після повторних помилок
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ApiError'}
+    ExpiredCode:
+      description: Код прострочений, використаний, замінений або вичерпано спроби
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ApiError'}
+          examples:
+            expired: {value: {code: code_invalid, message: Код недійсний або його строк дії завершився.}}
+    ExpiredLink:
+      description: Посилання прострочене, замінене або вже використане
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ApiError'}
+          examples:
+            expired: {value: {code: link_invalid, message: Посилання недійсне або його строк дії завершився.}}
+    ExternalServiceError:
+      description: SMS надсилання відхилено або не підтверджено в межах визначеного часу
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ApiError'}
+          examples:
+            unconfirmed: {value: {code: sms_unconfirmed, message: Надсилання не вдалося або не підтверджене.}}
+    PayloadTooLarge:
+      description: Файл перевищує визначений максимальний розмір
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ApiError'}
+  schemas:
+    ApiError:
+      type: object
+      required: [code, message]
+      properties:
+        code: {type: string}
+        message: {type: string}
+        details: {type: object, additionalProperties: true}
+    ClientRegistrationRequest:
+      type: object
+      required: [firstName, lastName, phone]
+      properties:
+        firstName: {type: string, minLength: 1}
+        lastName: {type: string, minLength: 1}
+        phone: {$ref: '#/components/schemas/ClientPhone'}
+        email: {type: string, format: email}
+    ClientRegistrationConfirmation:
+      type: object
+      required: [phone, code, password]
+      properties:
+        phone: {$ref: '#/components/schemas/ClientPhone'}
+        code: {type: string}
+        password: {$ref: '#/components/schemas/Password'}
+    ClientLogin:
+      type: object
+      required: [phone, password]
+      properties:
+        phone: {$ref: '#/components/schemas/ClientPhone'}
+        password: {$ref: '#/components/schemas/Password'}
+    StaffLogin:
+      type: object
+      required: [login, password]
+      properties:
+        login: {type: string, minLength: 3, maxLength: 50, pattern: '^[A-Za-z0-9._-]+$'}
+        password: {$ref: '#/components/schemas/Password'}
+    Password:
+      type: string
+      minLength: 15
+      maxLength: 128
+      description: Кодова довжина за REQ-NF-010; значення не нормалізується, пробіли дозволені.
+      example: 'довгий пароль з пробілами'
+    PhoneRequest:
+      type: object
+      required: [phone]
+      properties:
+        phone: {$ref: '#/components/schemas/ClientPhone'}
+    ClientPhone:
+      type: string
+      description: >-
+        Номер з кодом +380 і дев’ятьма цифрами. Перед перевіркою дозволено прибрати
+        пробіли, дужки та дефіси; після нормалізації мають залишитися рівно дев’ять цифр.
+    PhoneChangeCodeRequest:
+      type: object
+      required: [newPhone]
+      properties:
+        newPhone: {$ref: '#/components/schemas/ClientPhone'}
+    PasswordResetConfirmation:
+      type: object
+      required: [phone, code, newPassword]
+      properties:
+        phone: {$ref: '#/components/schemas/ClientPhone'}
+        code: {type: string}
+        newPassword: {$ref: '#/components/schemas/Password'}
+    ClientPhoneChange:
+      type: object
+      required: [currentPassword, newPhone, code]
+      properties:
+        currentPassword: {$ref: '#/components/schemas/Password'}
+        newPhone: {$ref: '#/components/schemas/ClientPhone'}
+        code: {type: string}
+    CodeRequestResult:
+      type: object
+      required: [status]
+      properties:
+        status: {type: string, enum: [requested, unconfirmed], description: 'requested означає прийняття SMS-сервісом запиту, а не доставку.'}
+        retryAfterSeconds: {type: integer, minimum: 60, description: Мінімальний час до повторного надсилання за REQ-F-006.}
+    Session:
+      type: object
+      required: [accessToken]
+      properties:
+        accessToken: {type: string}
+        tokenType: {type: string, enum: [Bearer]}
+    ClientProfileInput:
+      type: object
+      required: [firstName, lastName, phone]
+      properties:
+        firstName: {type: string, minLength: 1}
+        lastName: {type: string, minLength: 1}
+        phone: {$ref: '#/components/schemas/ClientPhone'}
+        email: {type: string, format: email}
+    ClientProfilePatch:
+      type: object
+      minProperties: 1
+      properties:
+        firstName: {type: string, minLength: 1}
+        lastName: {type: string, minLength: 1}
+        email: {type: string, format: email, nullable: true}
+    ClientProfile:
+      type: object
+      required: [id, firstName, lastName, phone, pets]
+      properties:
+        id: {type: string}
+        firstName: {type: string}
+        lastName: {type: string}
+        phone: {type: string}
+        email: {type: string, format: email, nullable: true}
+        pets:
+          type: array
+          description: Пов’язані картки, доступні цьому запитувачу за REQ-F-034.
+          items: {$ref: '#/components/schemas/PetSummary'}
+    PetSummary:
+      type: object
+      required: [id, name, species]
+      properties:
+        id: {type: string}
+        name: {type: string}
+        species: {type: string}
+        deceased: {type: boolean}
+        ownershipClosed: {type: boolean}
+    PasswordLink:
+      type: object
+      required: [token, expiresAt]
+      properties:
+        token: {type: string, description: Секретне одноразове значення; не журналювати.}
+        expiresAt: {type: string, format: date-time}
+    PasswordLinkCompletion:
+      type: object
+      required: [token, password]
+      properties:
+        token: {type: string}
+        password: {$ref: '#/components/schemas/Password'}
+    RecoveryReviewInput:
+      type: object
+      required: [clientId, result]
+      properties:
+        clientId: {type: string}
+        result: {type: string, enum: [positive, negative]}
+    RecoveryReview:
+      type: object
+      required: [id, clientId, administratorId, result, reviewedAt]
+      properties:
+        id: {type: string}
+        clientId: {type: string}
+        administratorId: {type: string}
+        result: {type: string, enum: [positive, negative]}
+        reviewedAt: {type: string, format: date-time}
+        newPhone: {$ref: '#/components/schemas/ClientPhone'}
+        passwordLinkToken: {type: string, description: 'Одноразове посилання, створене лише за позитивного результату; не журналювати.'}
+        passwordLinkExpiresAt: {type: string, format: date-time}
+    RecoveryPhoneCodeRequest:
+      type: object
+      required: [passwordLinkToken, newPhone]
+      properties:
+        passwordLinkToken: {type: string}
+        newPhone: {$ref: '#/components/schemas/ClientPhone'}
+    RecoveryPhoneConfirmation:
+      type: object
+      required: [passwordLinkToken, newPhone, code]
+      properties:
+        passwordLinkToken: {type: string}
+        newPhone: {$ref: '#/components/schemas/ClientPhone'}
+        code: {type: string}
+    RecoveryCompletion:
+      type: object
+      required: [passwordLinkToken, newPassword]
+      properties:
+        passwordLinkToken: {type: string}
+        newPassword: {$ref: '#/components/schemas/Password'}
+    StaffAccountInput:
+      type: object
+      required: [login, role]
+      properties:
+        login: {type: string, minLength: 3, maxLength: 50, pattern: '^[A-Za-z0-9._-]+$'}
+        role: {type: string, enum: [administrator, veterinarian]}
+    StaffAccount:
+      type: object
+      required: [id, login, role, blocked]
+      properties:
+        id: {type: string}
+        login: {type: string}
+        role: {type: string, enum: [administrator, veterinarian]}
+        blocked: {type: boolean}
+    StaffAvailabilityChange:
+      type: object
+      required: [blocked]
+      properties:
+        blocked: {type: boolean}
+    ClientSearchResults:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required: [id, firstName, lastName, phone]
+            properties:
+              id: {type: string}
+              firstName: {type: string}
+              lastName: {type: string}
+              phone: {type: string}
+    PetCreate:
+      type: object
+      required: [name, species, sex]
+      allOf:
+        - oneOf:
+            - required: [passportAvailableConfirmed]
+              properties: {passportAvailableConfirmed: {enum: [true]}}
+              not: {required: [clientId]}
+            - required: [clientId]
+        - oneOf:
+            - required: [breed]
+              not: {required: [breedUnknown]}
+            - required: [breedUnknown]
+              properties: {breedUnknown: {enum: [true]}}
+              not: {required: [breed]}
+        - oneOf:
+            - required: [birthDate]
+              not: {anyOf: [{required: [birthYear]}, {required: [birthUnknown]}]}
+            - required: [birthYear]
+              not: {anyOf: [{required: [birthDate]}, {required: [birthUnknown]}]}
+            - required: [birthUnknown]
+              properties: {birthUnknown: {enum: [true]}}
+              not: {anyOf: [{required: [birthDate]}, {required: [birthYear]}]}
+      properties:
+        clientId: {type: string, description: Потрібен при створенні працівником.}
+        name: {type: string, minLength: 1}
+        species: {type: string, minLength: 1}
+        sex: {type: string, enum: [Самець, Самка, Невідомо]}
+        breed: {type: string, minLength: 1}
+        breedUnknown: {type: boolean}
+        birthDate: {type: string, format: date}
+        birthYear: {type: integer}
+        birthUnknown: {type: boolean}
+        passportNumber: {type: string}
+        microchip: {type: string, pattern: '^[0-9]{15}$'}
+        passportAvailableConfirmed: {type: boolean, description: Потрібно для самостійного додавання клієнтом.}
+    PetPatch:
+      type: object
+      minProperties: 1
+      description: Для породи треба надіслати breed або breedUnknown=true, але не обидва. Для народження — рівно одне з birthDate, birthYear або birthUnknown=true. Дата та рік не можуть бути майбутніми за Europe/Kyiv.
+      allOf:
+        - oneOf:
+            - not: {anyOf: [{required: [breed]}, {required: [breedUnknown]}]}
+            - required: [breed]
+              not: {required: [breedUnknown]}
+            - required: [breedUnknown]
+              properties: {breedUnknown: {enum: [true]}}
+              not: {required: [breed]}
+        - oneOf:
+            - not: {anyOf: [{required: [birthDate]}, {required: [birthYear]}, {required: [birthUnknown]}]}
+            - required: [birthDate]
+              not: {anyOf: [{required: [birthYear]}, {required: [birthUnknown]}]}
+            - required: [birthYear]
+              not: {anyOf: [{required: [birthDate]}, {required: [birthUnknown]}]}
+            - required: [birthUnknown]
+              properties: {birthUnknown: {enum: [true]}}
+              not: {anyOf: [{required: [birthDate]}, {required: [birthYear]}]}
+      properties:
+        name: {type: string, minLength: 1}
+        species: {type: string, minLength: 1}
+        sex: {type: string, enum: [Самець, Самка, Невідомо]}
+        breed: {type: string, minLength: 1}
+        breedUnknown: {type: boolean}
+        birthDate: {type: string, format: date}
+        birthYear: {type: integer}
+        birthUnknown: {type: boolean}
+        passportNumber: {type: string}
+        microchip: {type: string, pattern: '^[0-9]{15}$'}
+    PetVerification:
+      type: object
+      required: [confirmed]
+      oneOf:
+        - required: [confirmed]
+          properties: {confirmed: {enum: [true]}}
+        - required: [confirmed, explanation]
+          properties: {confirmed: {enum: [false]}, explanation: {type: string, minLength: 1}}
+      properties:
+        confirmed: {type: boolean}
+        correctedData: {$ref: '#/components/schemas/PetPatch'}
+        explanation: {type: string, description: 'Обов’язкове пояснення, якщо даних недостатньо і картка лишається непідтвердженою.'}
+    Pet:
+      type: object
+      required: [id, name, species, sex, dataConfirmed, currentOwnerId, deceased, ownershipClosed, needsChangeReview, changeProposals]
+      allOf:
+        - oneOf:
+            - required: [breed]
+              not: {required: [breedUnknown]}
+            - required: [breedUnknown]
+              properties: {breedUnknown: {enum: [true]}}
+              not: {required: [breed]}
+        - oneOf:
+            - required: [birthDate]
+              not: {anyOf: [{required: [birthYear]}, {required: [birthUnknown]}]}
+            - required: [birthYear]
+              not: {anyOf: [{required: [birthDate]}, {required: [birthUnknown]}]}
+            - required: [birthUnknown]
+              properties: {birthUnknown: {enum: [true]}}
+              not: {anyOf: [{required: [birthDate]}, {required: [birthYear]}]}
+      properties:
+        id: {type: string}
+        name: {type: string}
+        species: {type: string}
+        sex: {type: string, enum: [Самець, Самка, Невідомо]}
+        breed: {type: string, minLength: 1}
+        breedUnknown: {type: boolean}
+        birthDate: {type: string, format: date}
+        birthYear: {type: integer}
+        birthUnknown: {type: boolean}
+        passportNumber: {type: string}
+        microchip: {type: string}
+        currentOwnerId: {type: string, nullable: true}
+        dataConfirmed: {type: boolean}
+        verificationExplanation: {type: string}
+        deceased: {type: boolean}
+        ownershipClosed: {type: boolean}
+        needsChangeReview: {type: boolean}
+        changeProposals:
+          type: array
+          description: Подані пропозиції показуються окремо від чинних полів; нерозглянута пропозиція формує needsChangeReview.
+          items: {$ref: '#/components/schemas/PetChangeProposal'}
+    PetSearchResults:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required: [id, name, species, currentOwnerLabel, deceased, ownershipClosed]
+            properties:
+              id: {type: string}
+              name: {type: string}
+              species: {type: string}
+              currentOwnerLabel: {type: string, description: Якщо власника немає — «Поточний власник відсутній».}
+              deceased: {type: boolean}
+              ownershipClosed: {type: boolean}
+    PetChangeProposalInput:
+      type: object
+      required: [proposedData]
+      properties:
+        proposedData: {$ref: '#/components/schemas/PetPatch'}
+    PetChangeProposal:
+      type: object
+      required: [id, petId, proposedData]
+      properties:
+        id: {type: string}
+        petId: {type: string}
+        proposedData: {$ref: '#/components/schemas/PetPatch'}
+        decision: {type: string, enum: [approved, rejected], nullable: true}
+        rejectionReason: {type: string}
+    ProposalDecision:
+      oneOf:
+        - type: object
+          required: [decision]
+          properties: {decision: {type: string, enum: [approved]}}
+        - type: object
+          required: [decision, reason]
+          properties:
+            decision: {type: string, enum: [rejected]}
+            reason: {type: string, minLength: 1}
+    AnimalEventInput:
+      type: object
+      required: [eventDate]
+      properties:
+        eventDate: {type: string, format: date}
+        eventTime: {type: string, pattern: '^([01][0-9]|2[0-3]):[0-5][0-9]$', description: 'Не передавати, якщо час невідомий.'}
+    AnimalEvent:
+      type: object
+      required: [id, eventDate, recordedAt, recordedBy]
+      properties:
+        id: {type: string}
+        eventDate: {type: string, format: date}
+        eventTime: {type: string}
+        recordedAt: {type: string, format: date-time}
+        recordedBy: {type: string}
+        correctionHistory:
+          type: array
+          items: {$ref: '#/components/schemas/AnimalEventCorrectionEntry'}
+    AnimalEventCorrectionEntry:
+      type: object
+      required: [reason, correctedAt, correctedBy]
+      properties:
+        reason: {type: string}
+        correctedAt: {type: string, format: date-time}
+        correctedBy: {type: string}
+    EventCorrection:
+      type: object
+      required: [corrected, reason]
+      properties:
+        corrected: {type: boolean}
+        reason: {type: string, minLength: 1}
+    WorkIntervals:
+      type: object
+      required: [intervals]
+      properties:
+        intervals:
+          type: array
+          items: {$ref: '#/components/schemas/TimeInterval'}
+    TimeInterval:
+      type: object
+      required: [start, end]
+      properties:
+        start: {type: string, pattern: '^([01][0-9]|2[0-3]):[0-5][0-9]$'}
+        end: {type: string, pattern: '^([01][0-9]|2[0-3]):[0-5][0-9]$'}
+    ScheduleConflict:
+      type: object
+      required: [code, message, appointmentIds]
+      properties:
+        code: {type: string, enum: [schedule_conflict]}
+        message: {type: string}
+        appointmentIds: {type: array, items: {type: string}}
+    AppointmentSlotList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required: [veterinarianId, startsAt, endsAt]
+            properties:
+              veterinarianId: {type: string}
+              startsAt: {type: string, format: date-time}
+              endsAt: {type: string, format: date-time}
+    AppointmentCreate:
+      type: object
+      required: [clientId, petId, veterinarianId, startsAt, idempotencyKey]
+      properties:
+        clientId: {type: string}
+        petId: {type: string}
+        veterinarianId: {type: string}
+        startsAt: {type: string, format: date-time}
+        recommendationId: {type: string}
+        historical: {type: boolean, description: Історичне внесення працівником.}
+        sameDayEventConfirmation:
+          type: object
+          description: Для прийому того самого дня, коли подію смерті/припинення опіки внесено лише датою; подати причину явного підтвердження. Автор і час беруться з автентифікованої дії адміністратора.
+          required: [reason]
+          properties:
+            reason: {type: string, minLength: 1}
+        idempotencyKey: {type: string, minLength: 1, description: Ключ ідентифікації повтору тієї самої спроби за REQ-F-042.}
+    AppointmentReschedule:
+      type: object
+      required: [veterinarianId, startsAt]
+      properties:
+        veterinarianId: {type: string}
+        startsAt: {type: string, format: date-time}
+    AppointmentStatusChange:
+      oneOf:
+        - type: object
+          required: [status]
+          properties: {status: {type: string, enum: [Проведений]}}
+        - type: object
+          required: [status]
+          properties: {status: {type: string, enum: [Неявка]}}
+        - type: object
+          required: [status, reason]
+          properties:
+            status: {type: string, enum: [Скасований]}
+            reason: {type: string, minLength: 1}
+        - type: object
+          required: [status, reason]
+          properties:
+            status: {type: string, enum: [Підтверджено]}
+            reason: {type: string, minLength: 1}
+    Appointment:
+      type: object
+      required: [id, clientId, petId, veterinarianId, startsAt, endsAt, status]
+      properties:
+        id: {type: string}
+        clientId: {type: string}
+        petId: {type: string}
+        veterinarianId: {type: string}
+        startsAt: {type: string, format: date-time}
+        endsAt: {type: string, format: date-time}
+        status: {type: string, enum: [Підтверджено, Проведений, Скасований, Неявка]}
+        recommendationId: {type: string, nullable: true}
+        cancellationReason: {type: string}
+        organizationalRecommendation: {type: string}
+        statusHistory:
+          type: array
+          items: {$ref: '#/components/schemas/AppointmentStatusHistoryEntry'}
+    AppointmentStatusHistoryEntry:
+      type: object
+      required: [previousStatus, newStatus, changedBy, changedAt]
+      properties:
+        previousStatus: {type: string, enum: [Підтверджено, Проведений, Скасований, Неявка]}
+        newStatus: {type: string, enum: [Підтверджено, Проведений, Скасований, Неявка]}
+        changedBy: {type: string}
+        changedAt: {type: string, format: date-time}
+        reason: {type: string}
+    AppointmentList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/Appointment'}
+    AppointmentMedicalRecordInput:
+      type: object
+      required: [reasonForVisit, examinationResults]
+      properties:
+        reasonForVisit: {type: string, minLength: 1}
+        examinationResults: {type: string, minLength: 1}
+        diagnosis: {type: string}
+        treatment: {type: string}
+        diet: {type: string}
+    StandaloneMedicalRecordInput:
+      type: object
+      required: [recordType]
+      oneOf:
+        - required: [name, performedDate]
+          properties:
+            recordType: {enum: [аналіз, обстеження]}
+            name: {type: string, minLength: 1}
+            performedDate: {type: string, format: date}
+          not: {anyOf: [{required: [source]}, {required: [productName]}]}
+        - required: [name, performedDate, productName]
+          properties:
+            recordType: {enum: [щеплення, обробка]}
+            name: {type: string, minLength: 1}
+            performedDate: {type: string, format: date}
+            productName: {type: string, minLength: 1}
+          not: {required: [source]}
+        - required: [name, performedDate, source, productName]
+          properties:
+            recordType: {enum: [історична процедура]}
+            name: {type: string, nullable: true}
+            performedDate: {type: string, format: date, nullable: true}
+            source: {type: string, nullable: true}
+            productName: {type: string, nullable: true}
+      properties:
+        recordType: {type: string, enum: [аналіз, обстеження, щеплення, обробка, історична процедура]}
+        appointmentId: {type: string, nullable: true}
+        name: {type: string, nullable: true, description: Назва результату/процедури; null для історичного запису означає явно невідоме значення.}
+        performedDate: {type: string, format: date, nullable: true, description: Обов’язкова для результату аналізу/обстеження та процедури клініки; null позначає невідому точну дату лише для історичної процедури.}
+        conclusion: {type: string}
+        source: {type: string, nullable: true, description: Обов’язкове для історичної процедури; null явно позначає невідоме джерело.}
+        productName: {type: string, nullable: true, description: Обов’язкова назва препарату для процедури клініки; для історичної процедури null означає явно невідоме значення.}
+    MedicalRecordRevision:
+      type: object
+      required: [reason]
+      properties:
+        reason: {type: string, minLength: 1}
+        erroneous: {type: boolean}
+        name: {type: string, nullable: true}
+        performedDate: {type: string, format: date, nullable: true}
+        conclusion: {type: string}
+        source: {type: string, nullable: true}
+        productName: {type: string, nullable: true}
+        reasonForVisit: {type: string}
+        examinationResults: {type: string}
+        diagnosis: {type: string}
+        treatment: {type: string}
+        diet: {type: string}
+    MedicalRecordRevisionWithAttachments:
+      type: object
+      required: [record]
+      properties:
+        record:
+          $ref: '#/components/schemas/MedicalRecordRevision'
+        files:
+          type: array
+          maxItems: 5
+          items: {$ref: '#/components/schemas/MedicalAttachmentUpload'}
+        removeAttachmentIds:
+          type: array
+          items: {type: string}
+          description: Вкладення поточної версії, вилучені з нової версії; попередня версія з файлами зберігається.
+    MedicalRecord:
+      type: object
+      required: [id, petId, authorId, recordType, createdAt]
+      properties:
+        id: {type: string}
+        petId: {type: string}
+        appointmentId: {type: string, nullable: true}
+        authorId: {type: string}
+        recordType: {type: string, description: Тип медичного запису за SRS.}
+        createdAt: {type: string, format: date-time}
+        name: {type: string}
+        performedDate: {type: string, format: date, nullable: true}
+        conclusion: {type: string}
+        source: {type: string}
+        productName: {type: string, nullable: true}
+        reasonForVisit: {type: string}
+        examinationResults: {type: string}
+        diagnosis: {type: string}
+        treatment: {type: string}
+        diet: {type: string}
+        erroneous: {type: boolean}
+        versions:
+          type: array
+          items: {$ref: '#/components/schemas/MedicalRecordVersion'}
+    MedicalRecordVersion:
+      type: object
+      required: [versionId, reason, createdAt]
+      properties:
+        versionId: {type: string}
+        reason: {type: string}
+        createdAt: {type: string, format: date-time}
+        recordData: {$ref: '#/components/schemas/MedicalRecordVersionData'}
+        attachmentIds: {type: array, items: {type: string}}
+    MedicalRecordVersionData:
+      type: object
+      properties:
+        recordType: {type: string, enum: [аналіз, обстеження, щеплення, обробка, історична процедура]}
+        name: {type: string, nullable: true}
+        performedDate: {type: string, format: date, nullable: true}
+        conclusion: {type: string}
+        source: {type: string, nullable: true}
+        productName: {type: string, nullable: true}
+        reasonForVisit: {type: string}
+        examinationResults: {type: string}
+        diagnosis: {type: string}
+        treatment: {type: string}
+        diet: {type: string}
+    MedicalRecordList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/MedicalRecord'}
+    MedicalRecordWithAttachments:
+      type: object
+      required: [record]
+      properties:
+        record:
+          type: string
+          description: JSON-серіалізований StandaloneMedicalRecordInput.
+        files:
+          type: array
+          maxItems: 5
+          items:
+            $ref: '#/components/schemas/MedicalAttachmentUpload'
+    MedicalAttachmentUpload:
+      type: string
+      format: binary
+      description: PDF, JPEG або PNG, фактичний формат перевіряється; максимум 10 000 000 байтів включно.
+    ReferralInput:
+      type: object
+      required: [issuedDate, prescribed, direction]
+      properties:
+        issuedDate: {type: string, format: date}
+        prescribed: {type: string, minLength: 1}
+        direction: {type: string, enum: [аналіз, обстеження, спеціаліст, зовнішня установа]}
+        institution: {type: string}
+        appointmentId: {type: string}
+    Referral:
+      allOf:
+        - {$ref: '#/components/schemas/ReferralInput'}
+        - type: object
+          required: [id, petId, veterinarianId]
+          properties:
+            id: {type: string}
+            petId: {type: string}
+            veterinarianId: {type: string}
+    RecommendationInput:
+      type: object
+      required: [petId, format, recommendationText]
+      properties:
+        petId: {type: string}
+        format: {type: string, enum: [У клініці, Вдома]}
+        recommendationText: {type: string}
+        bookingGuidance: {type: string, description: Окреме поле «Рекомендація щодо запису» для клінічної рекомендації.}
+        recommendedDate: {type: string, format: date}
+        dateBasis:
+          type: object
+          required: [type, id]
+          properties:
+            type: {type: string, enum: [appointment, performedProcedure]}
+            id: {type: string}
+          additionalProperties: false
+          description: Явно обрана подія; для відносного строку система використовує збережену точну дату. Процедуру з невідомою датою відхиляє відповідно до ADD-001.
+        relativeDays: {type: integer, minimum: 1}
+        homeInstruction: {type: string}
+      oneOf:
+        - required: [bookingGuidance]
+          properties: {format: {type: string, enum: [У клініці]}}
+          oneOf:
+            - required: [recommendedDate]
+              not: {anyOf: [{required: [dateBasis]}, {required: [relativeDays]}]}
+            - required: [dateBasis, relativeDays]
+              not: {required: [recommendedDate]}
+          not: {required: [homeInstruction]}
+        - required: [recommendedDate, homeInstruction]
+          properties: {format: {type: string, enum: [Вдома]}}
+          not: {anyOf: [{required: [bookingGuidance]}, {required: [dateBasis]}, {required: [relativeDays]}]}
+    RecommendationRevision:
+      type: object
+      required: [reason]
+      properties:
+        reason: {type: string, minLength: 1}
+        format: {type: string, enum: [У клініці, Вдома]}
+        recommendationText: {type: string}
+        bookingGuidance: {type: string}
+        recommendedDate: {type: string, format: date}
+        dateBasis: {$ref: '#/components/schemas/RecommendationInput/properties/dateBasis'}
+        relativeDays: {type: integer, minimum: 1}
+        homeInstruction: {type: string}
+      description: Часткове виправлення з причиною; після застосування до поточної версії поля мають відповідати правилам вибраного формату. Формат не змінюється за пов’язаного підтвердженого або проведеного прийому.
+    Recommendation:
+      type: object
+      required: [id, petId, authorId, format, recommendationText, recommendedDate, canceled, createdAt, versions]
+      allOf:
+        - oneOf:
+            - required: [bookingGuidance]
+              properties: {format: {type: string, enum: [У клініці]}}
+              oneOf:
+                - not: {anyOf: [{required: [dateBasis]}, {required: [relativeDays]}]}
+                - required: [dateBasis, relativeDays]
+              not: {required: [homeInstruction]}
+            - required: [homeInstruction]
+              properties: {format: {type: string, enum: [Вдома]}}
+              not: {anyOf: [{required: [bookingGuidance]}, {required: [dateBasis]}, {required: [relativeDays]}]}
+        - oneOf:
+            - required: [canceled]
+              properties: {canceled: {enum: [false]}}
+              not: {required: [cancellationReason]}
+            - required: [canceled, cancellationReason]
+              properties: {canceled: {enum: [true]}, cancellationReason: {type: string, minLength: 1}}
+      properties:
+        id: {type: string}
+        petId: {type: string}
+        authorId: {type: string}
+        format: {type: string, enum: [У клініці, Вдома]}
+        recommendationText: {type: string}
+        bookingGuidance: {type: string}
+        recommendedDate: {type: string, format: date}
+        relativeDays: {type: integer}
+        dateBasis: {$ref: '#/components/schemas/RecommendationInput/properties/dateBasis'}
+        homeInstruction: {type: string}
+        canceled: {type: boolean}
+        cancellationReason: {type: string}
+        createdAt: {type: string, format: date-time}
+        versions:
+          type: array
+          items: {$ref: '#/components/schemas/RecommendationVersion'}
+    RecommendationVersion:
+      type: object
+      required: [reason, createdAt, format, recommendationText, recommendedDate]
+      oneOf:
+        - required: [bookingGuidance]
+          properties: {format: {type: string, enum: [У клініці]}}
+          oneOf:
+            - not: {anyOf: [{required: [dateBasis]}, {required: [relativeDays]}]}
+            - required: [dateBasis, relativeDays]
+          not: {required: [homeInstruction]}
+        - required: [homeInstruction]
+          properties: {format: {type: string, enum: [Вдома]}}
+          not: {anyOf: [{required: [bookingGuidance]}, {required: [dateBasis]}, {required: [relativeDays]}]}
+      properties:
+        reason: {type: string}
+        createdAt: {type: string, format: date-time}
+        format: {type: string, enum: [У клініці, Вдома]}
+        recommendationText: {type: string}
+        bookingGuidance: {type: string}
+        recommendedDate: {type: string, format: date}
+        relativeDays: {type: integer}
+        dateBasis: {$ref: '#/components/schemas/RecommendationInput/properties/dateBasis'}
+        homeInstruction: {type: string}
+    RecommendationList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/Recommendation'}
+    WaitingRecommendationList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required: [recommendationId, clientName, contact, petName, recommendationText, bookingGuidance]
+            oneOf:
+              - required: [recommendedDate]
+                not: {anyOf: [{required: [dateBasis]}, {required: [relativeDays]}]}
+              - required: [relativeDays, dateBasis]
+                not: {required: [recommendedDate]}
+            properties:
+              recommendationId: {type: string}
+              clientName: {type: string}
+              contact: {type: string}
+              petName: {type: string}
+              recommendedDate: {type: string, format: date}
+              relativeDays: {type: integer}
+              recommendationText: {type: string, description: Лише необхідність клінічного повторного прийому чи процедури; без діагнозу або лікування.}
+              bookingGuidance: {type: string}
+              dateBasis: {$ref: '#/components/schemas/RecommendationInput/properties/dateBasis'}
+    CancellationReason:
+      type: object
+      required: [reason]
+      properties:
+        reason: {type: string, minLength: 1}

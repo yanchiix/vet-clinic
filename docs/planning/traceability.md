@@ -113,3 +113,9 @@ Local ticket IDs and GitHub issue numbers are both shown. RELEASE-GATE G04 (#25)
 - ADD-001 is applied through A01 (#2), T03 (#6), F06 (#13), G03 (#24), and the unchanged baseline identifiers REQ-F-062 / REQ-F-067 / AC-F-067 / BDD-046.
 - G02 PLAN-GATE (#23) is not passed by this file alone; it also requires the completed D02 planning package and human GO/REVISE decision.
 - G04 RELEASE-GATE (#25) is a release-wide control point and is not duplicated in all 95 rows.
+
+## Обмежені докази перевірки API-контракту
+
+Надані результати: Redocly lint для OpenAPI 3.0.3 — VALID, 0 errors і 56 warnings; усі warnings належать до `no-required-schema-properties-undefined` у композиційних схемах з умовними `required`. Prism mock на `http://127.0.0.1:4010` пройшов 11 сценаріїв із 0 помилок (`tests/contract/prism-smoke.ps1`). Деталі й обмеження наведені в [`docs/contract-testing.md`](../contract-testing.md).
+
+Ці результати є обмеженими доказами lint/HTTP-поведінки mock для вибраних запитів. Вони не позначають вимоги реалізованими чи повністю протестованими. Зокрема, умовні обмеження композиційних схем ще не підтверджені реальним backend; HTTP 422 для некоректного тіла входу є спостереженням Prism, а не окремо задекларованою відповіддю цієї операції в OpenAPI.
