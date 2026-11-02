@@ -8,14 +8,16 @@
 |---|---|---|
 | OpenAPI lint | `npx @redocly/cli@latest lint api/openapi.yaml --extends=minimal` | OpenAPI 3.0.3 — VALID; 0 errors; 56 warnings. |
 | Prism mock | `npx @stoplight/prism-cli@latest mock api/openapi.yaml` | Successfully started at `http://127.0.0.1:4010`. |
-| Smoke test | `powershell -NoProfile -ExecutionPolicy Bypass -File .\tests\contract\prism-smoke.ps1` | 11 PASS; 0 FAIL; 11 total. |
+| Smoke test | `powershell -NoProfile -ExecutionPolicy Bypass -File .\tests\contract\prism-smoke.ps1` | 14 PASS; 0 FAIL; 14 total. |
 
 Smoke-сценарії з `tests/contract/prism-smoke.ps1`:
 
 - `GET /appointment-slots`: відсутній bearer, валідний запит, некоректна й відсутня дата;
 - `GET /pets`: відсутній bearer;
-- `POST /pets` та `POST /appointments`: порожнє некоректне тіло;
+- `POST /pets`: порожнє некоректне тіло й валідне синтетичне тіло (HTTP 201);
+- `POST /appointments`: порожнє некоректне тіло й валідне синтетичне тіло (HTTP 201; Prism-заголовок `Prefer: code=201`);
 - `GET /pets/pet-1/medical-records`: відсутній bearer;
+- `GET /pets/pet-smoke-1/medical-records`: bearer-запит (HTTP 200);
 - `GET /recommendations`: запит із bearer;
 - `POST /recommendations`: порожнє некоректне тіло;
 - `POST /auth/client-sessions`: порожнє некоректне тіло.
@@ -37,7 +39,7 @@ Prism smoke підтверджує лише окремі HTTP-відповіді
 Виконано за наданими результатами:
 
 - lint контракту: VALID, 0 errors;
-- Prism smoke: 11 із 11 сценаріїв пройшли.
+- Prism smoke: 14 із 14 сценаріїв пройшли.
 
 Для G03/API-GATE залишаються невиконаними або непідтвердженими:
 

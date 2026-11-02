@@ -8,8 +8,11 @@ $cases = @(
     @{ Name='Slots: missing date'; Method='GET'; Path='/appointment-slots'; Token=$true; Expected=400 },
     @{ Name='Pets: missing bearer'; Method='GET'; Path='/pets'; Expected=401 },
     @{ Name='Pets: invalid create body'; Method='POST'; Path='/pets'; Token=$true; Body='{}'; Expected=400 },
+    @{ Name='Pets: valid create body'; Method='POST'; Path='/pets'; Token=$true; Body='{"clientId":"client-smoke-1","name":"Smoke pet","species":"cat","sex":"\u0421\u0430\u043c\u043a\u0430","breed":"mixed","birthDate":"2020-01-01"}'; Expected=201 },
     @{ Name='Appointments: invalid create body'; Method='POST'; Path='/appointments'; Token=$true; Body='{}'; Expected=400 },
+    @{ Name='Appointments: valid create body'; Method='POST'; Path='/appointments'; Token=$true; PreferCode=201; Body='{"clientId":"client-smoke-1","petId":"pet-smoke-1","veterinarianId":"vet-smoke-1","startsAt":"2030-01-15T10:00:00+02:00","idempotencyKey":"smoke-appointment-001"}'; Expected=201 },
     @{ Name='Medical history: missing bearer'; Method='GET'; Path='/pets/pet-1/medical-records'; Expected=401 },
+    @{ Name='Medical history: list with bearer'; Method='GET'; Path='/pets/pet-smoke-1/medical-records'; Token=$true; Expected=200 },
     @{ Name='Recommendations: list'; Method='GET'; Path='/recommendations'; Token=$true; Expected=200 },
     @{ Name='Recommendations: invalid create body'; Method='POST'; Path='/recommendations'; Token=$true; Body='{}'; Expected=400 },
     @{ Name='Client login: invalid body'; Method='POST'; Path='/auth/client-sessions'; Body='{}'; Expected=422 }
@@ -21,6 +24,7 @@ foreach ($case in $cases) {
     $url = $BaseUrl.TrimEnd('/') + $case.Path
     $headers = @{}
     if ($case.Token) { $headers['Authorization'] = 'Bearer test-token' }
+    if ($case.PreferCode) { $headers['Prefer'] = "code=$($case.PreferCode)" }
     $request = @{ Uri=$url; Method=$case.Method; Headers=$headers; UseBasicParsing=$true; ErrorAction='Stop' }
     if ($null -ne $case.Body) {
         $request['Body'] = $case.Body
