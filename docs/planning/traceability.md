@@ -85,18 +85,18 @@ Local ticket IDs and GitHub issue numbers are both shown. RELEASE-GATE G04 (#25)
 | REQ-F-072 | AC-F-072 | BDD-047 | T03 (#6), F06 (#13), VAL01 (#22), G03 (#24) |
 | REQ-F-073 | AC-F-073 | BDD-049 | T01 (#4), F02 (#9), V01 (#20) |
 | REQ-F-074 | AC-F-074 | BDD-050 | F09 (#16), V01 (#20) |
-| REQ-F-075 | AC-F-075 | BDD-052 | A02, T01 (#4), F01 (#8), VAL01 (#22), G03 (#24) |
-| REQ-F-076 | AC-F-076 | BDD-053, BDD-054 | A02, T01 (#4), F02 (#9), VAL01 (#22), G03 (#24) |
-| REQ-F-077 | AC-F-077 | — | A02, T01 (#4), F01 (#8), VAL01 (#22), G03 (#24) |
-| REQ-F-078 | AC-F-078 | BDD-055 | A02, T01 (#4), F01 (#8), VAL01 (#22), G03 (#24) |
-| REQ-F-079 | AC-F-079 | BDD-056 | A02, T02 (#5), F03 (#10), VAL01 (#22) |
-| REQ-F-080 | AC-F-080 | BDD-057 | A02, T02 (#5), F03 (#10), VAL01 (#22) |
-| REQ-F-081 | AC-F-081 | BDD-058 | A02, T03 (#6), F04 (#11), VAL01 (#22) |
-| REQ-F-082 | AC-F-082 | BDD-059 | A02, T03 (#6), F04 (#11), VAL01 (#22) |
-| REQ-F-083 | AC-F-083 | BDD-060 | A02, T04 (#7), F05 (#12), VAL01 (#22), G03 (#24) |
-| REQ-F-084 | AC-F-084 | BDD-061 | A02, T03 (#6), F06 (#13), VAL01 (#22) |
-| REQ-F-085 | AC-F-085 | BDD-062 | A02, T03 (#6), F06 (#13), VAL01 (#22), G03 (#24) |
-| REQ-F-086 | AC-F-086 | BDD-053, BDD-056, BDD-059, BDD-062 | A02, T01 (#4), T02 (#5), T03 (#6), F01 (#8), F02 (#9), F03 (#10), F04 (#11), F06 (#13), G03 (#24) |
+| REQ-F-075 | AC-F-075 | BDD-052 | A02 (#26), T01 (#4), F01 (#8), VAL01 (#22), G03 (#24) |
+| REQ-F-076 | AC-F-076 | BDD-053, BDD-054 | A02 (#26), T01 (#4), F02 (#9), VAL01 (#22), G03 (#24) |
+| REQ-F-077 | AC-F-077 | — | A02 (#26), T01 (#4), F01 (#8), VAL01 (#22), G03 (#24) |
+| REQ-F-078 | AC-F-078 | BDD-055 | A02 (#26), T01 (#4), F01 (#8), VAL01 (#22), G03 (#24) |
+| REQ-F-079 | AC-F-079 | BDD-056 | A02 (#26), T02 (#5), F03 (#10), VAL01 (#22) |
+| REQ-F-080 | AC-F-080 | BDD-057 | A02 (#26), T02 (#5), F03 (#10), VAL01 (#22) |
+| REQ-F-081 | AC-F-081 | BDD-058 | A02 (#26), T03 (#6), F04 (#11), VAL01 (#22) |
+| REQ-F-082 | AC-F-082 | BDD-059 | A02 (#26), T03 (#6), F04 (#11), VAL01 (#22) |
+| REQ-F-083 | AC-F-083 | BDD-060 | A02 (#26), T04 (#7), F05 (#12), VAL01 (#22), G03 (#24) |
+| REQ-F-084 | AC-F-084 | BDD-061 | A02 (#26), T03 (#6), F06 (#13), VAL01 (#22) |
+| REQ-F-085 | AC-F-085 | BDD-062 | A02 (#26), T03 (#6), F06 (#13), VAL01 (#22), G03 (#24) |
+| REQ-F-086 | AC-F-086 | BDD-053, BDD-056, BDD-059, BDD-062 | A02 (#26), T01 (#4), T02 (#5), T03 (#6), F01 (#8), F02 (#9), F03 (#10), F04 (#11), F06 (#13), G03 (#24) |
 | REQ-NF-001 | AC-NF-001 | — | F10 (#17), V01 (#20), VAL01 (#22) |
 | REQ-NF-002 | AC-NF-002 | — | F10 (#17), V01 (#20), VAL01 (#22) |
 | REQ-NF-003 | AC-NF-003 | BDD-022, BDD-036 | T03 (#6), F04 (#11), V01 (#20) |
@@ -130,7 +130,7 @@ Local ticket IDs and GitHub issue numbers are both shown. RELEASE-GATE G04 (#25)
 ## ADD-002 (14.11.2026)
 
 - ADD-002 adds **12** requirements REQ-F-075–REQ-F-086 with AC-F-075–AC-F-086 and BDD-052–BDD-062; baseline IDs are not renumbered (REQ-DP-005). Total with ADD-002: **107** requirements.
-- A02 is the ADD-002 ticket; its GitHub Issue number is assigned when the Issue is created (ticket text: [ADD-002, розділ 10](../../spec/SRS_Vet_Clinic_v0.1_addendum_002.md#10-тікет-a02)).
+- A02 ([#26](https://github.com/yanchiix/vet-clinic/issues/26)) is the ADD-002 ticket.
 - ADD-002 is in force only after Human GO on SPEC-ADDENDUM-GATE.
 
 ### ADD-002: REQ → OpenAPI → smoke-сценарії
