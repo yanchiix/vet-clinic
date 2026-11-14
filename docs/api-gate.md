@@ -76,7 +76,7 @@ G03 Integrity Gate — окремий, ширший контрольний ет�
 | 5 | Схеми основних ресурсів | 69 schemas | **75 schemas** |
 | 7 | Операції пов’язані з REQ-ID | PASS | PASS; нові операції пов’язані з REQ-F-075–REQ-F-086 |
 | 9 | Автоматичний валідатор | VALID, 0 errors, 56 warnings | VALID, **0 errors, 56 warnings** (без нових попереджень) |
-| 11 | Позитивні сценарії | LIMITED (вибіркові) | PASS для HTTP-контракту: **46** позитивних, щонайменше один на кожну CRUD-операцію сутностей |
+| 11 | Позитивні сценарії | LIMITED (вибіркові) | PASS для HTTP-контракту: **46** позитивних; покрито CRUD-операції сутностей, крім `PATCH /medical-records/{recordId}` (обмеження Prism для multipart); 27 із 75 операцій, переважно процеси, smoke-тестами не покриті |
 | 12 | Негативні сценарії | LIMITED | PASS для HTTP-контракту: **44** негативні (`400`, `401`, `403`, `404`, `409`) |
 | 13 | Відтворення контракту mock-сервером | 14 PASS, 0 FAIL; 422 поза контрактом | **90 PASS, 0 FAIL**; усі очікувані коди задекларовані; 0 порушень схем у відповідях |
 | 14 | Нову поведінку оформлено адендумом | PASS | PASS — ADD-002 |
@@ -85,10 +85,14 @@ G03 Integrity Gate — окремий, ширший контрольний ет�
 
 ### Висновок повторної оцінки
 
-**READY FOR API-FIRST BASELINE 0.2.0** за умови рішення GO на SPEC-ADDENDUM-GATE для ADD-002. Висновок не означає готовність backend і не закриває G03.
+**READY FOR API-FIRST BASELINE 0.2.0.** Висновок не означає готовність backend і не закриває G03.
 
 ### Human decision (повторний API-GATE)
 
-- **Decision:** _очікує Human: GO / REVISE_
+- **Decision:** GO
 - **Scope:** API-first baseline 0.2.0 (SRS v0.1 + ADD-001 + ADD-002)
 - **Decision maker:** Student / Project owner
+- **Decision date:** 2026-11-14
+- **Basis:** ADD-002 approved (SPEC-ADDENDUM-GATE: GO); OpenAPI 0.2.0 VALID (0 errors, 56 warnings); Prism smoke 90 PASS, 0 FAIL with declared-code check; traceability for REQ-F-075–086; two gate audits (A1–A7 resolved).
+- **Accepted limitations:** mock does not verify business rules or deletion conditions; 403/404/409 checked via `Prefer`; `PATCH /medical-records/{recordId}` and 26 process operations are not covered by smoke; `DELETE /referrals/{referralId}` annuls instead of removing (documented in ADD-002).
+- **Explicit exclusion:** This GO does not close G03 Integrity Gate and does not certify backend implementation.

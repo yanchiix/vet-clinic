@@ -3,21 +3,13 @@ param(
     [string]$SpecPath = (Join-Path $PSScriptRoot '..\..\api\openapi.yaml')
 )
 
-# Contract smoke tests for api/openapi.yaml (ADD-002, contract 0.2.0).
-# Step 1 (contract check): every expected status code must be declared in the
-#   matching operation of openapi.yaml. A case that expects an undeclared code fails
-#   before any HTTP request is sent.
-# Step 2 (mock check): the request is sent to the Prism mock and the actual status
-#   code is compared with the expected one.
-# Prism does not evaluate business rules (e.g. "delete only without history"), so
-# 403/404/409 cases ask Prism for that declared response with "Prefer: code=NNN".
-# DELETE /medical-records/{recordId} declares no 2xx (always 409 on the server), but
-# Prism falls back to the "default" response, so this case also uses Prefer.
-# Known Prism 5.16 limitation: a request that violates an enum with Cyrillic values
-# crashes the mock (non-ASCII text in the "sl-violations" header), so negative cases
-# use missing required fields or ASCII-only constraints instead.
-# The file is ASCII-only: Cyrillic JSON values use \uXXXX escapes, query values are
-# percent-encoded (Windows PowerShell 5.1 reads BOM-less scripts as ANSI).
+# Contract smoke tests for api/openapi.yaml (CRUD of domain entities, ADD-002).
+# Step 1: the expected status code must be declared in the matching operation of
+#   openapi.yaml, otherwise the case fails before any request. Step 2: the request
+#   goes to the Prism mock and the actual code is compared with the expected one.
+# Prism limitations, Prefer headers and uncovered operations: docs/contract-testing.md.
+# ASCII-only file: Windows PowerShell 5.1 reads BOM-less scripts as ANSI, so Cyrillic
+#   JSON values use \uXXXX escapes and query values are percent-encoded.
 
 $ErrorActionPreference = 'Stop'
 
@@ -107,8 +99,7 @@ $cases = @(
     @{ Type='P'; Name='Medical history: list with bearer'; Method='GET'; Path='/pets/pet-smoke-1/medical-records'; Token=$true; Expected=200 },
     @{ Type='P'; Name='Medical records: create lab result'; Method='POST'; Path='/pets/pet-1/medical-records'; Token=$true; Body='{"recordType":"\u0430\u043d\u0430\u043b\u0456\u0437","name":"Blood test","performedDate":"2026-11-10"}'; Expected=201 },
     @{ Type='N'; Name='Medical records: create without type'; Method='POST'; Path='/pets/pet-1/medical-records'; Token=$true; Body='{}'; Expected=400 },
-    @{ Type='P'; Name='Medical records: read by id'; Method='GET'; Path='/medical-records/rec-1'; Token=$true; Expected=200 },
-    @{ Type='N'; Name='Medical records: delete is refused'; Method='DELETE'; Path='/medical-records/rec-1'; Token=$true; PreferCode=409; Expected=409 },
+    @{ Type='P'; Name='Medical records: read by id'; Method='GET'; Path='/medical-records/rec-1'; Token=$true; Expected=200 },    @{ Type='N'; Name='Medical records: delete is refused'; Method='DELETE'; Path='/medical-records/rec-1'; Token=$true; PreferCode=409; Expected=409 },
 
     # --- Referrals (REQ-F-065, REQ-F-084) ---
     @{ Type='P'; Name='Referrals: create'; Method='POST'; Path='/pets/pet-1/referrals'; Token=$true; Body='{"issuedDate":"2026-11-10","prescribed":"Ultrasound","direction":"\u043e\u0431\u0441\u0442\u0435\u0436\u0435\u043d\u043d\u044f"}'; Expected=201 },
@@ -170,7 +161,7 @@ function Find-Operation($declared, [string]$method, [string]$requestPath) {
 }
 
 $declared = Get-DeclaredResponses (Resolve-Path $SpecPath)
-Write-Host "Contract: $SpecPath ($($declared.Count) operations)"
+Write-Host "Contract: api/openapi.yaml ($($declared.Count) operations)"
 
 # ---------- Step 2: run cases ----------
 $passed = 0

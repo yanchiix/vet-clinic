@@ -1,7 +1,7 @@
 # Планова матриця простежуваності
 
 **Project:** Veterinary Clinic  
-**Baseline:** SRS v0.1 + ADD-001 + ADD-002 (ADD-002 — після GO на SPEC-ADDENDUM-GATE)  
+**Baseline:** SRS v0.1 + ADD-001 + ADD-002 (ADD-002 — GO на SPEC-ADDENDUM-GATE 14.11.2026)  
 **Оновлено за ADD-002:** 14.11.2026  
 **Оновлено для етапу планування реалізації:** 17.10.2026
 
@@ -131,7 +131,7 @@ Local ticket IDs and GitHub issue numbers are both shown. RELEASE-GATE G04 (#25)
 
 - ADD-002 adds **12** requirements REQ-F-075–REQ-F-086 with AC-F-075–AC-F-086 and BDD-052–BDD-062; baseline IDs are not renumbered (REQ-DP-005). Total with ADD-002: **107** requirements.
 - A02 ([#26](https://github.com/yanchiix/vet-clinic/issues/26)) is the ADD-002 ticket.
-- ADD-002 is in force only after Human GO on SPEC-ADDENDUM-GATE.
+- ADD-002 is in force: Human GO on SPEC-ADDENDUM-GATE, 14.11.2026.
 
 ### ADD-002: REQ → OpenAPI → smoke-сценарії
 

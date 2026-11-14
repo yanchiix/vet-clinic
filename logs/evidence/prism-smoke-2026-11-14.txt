@@ -1,4 +1,4 @@
-Contract: D:\year-4\semester-1\information-systems-design\vet-clinic\tests\contract\..\..\api\openapi.yaml (75 operations)
+Contract: api/openapi.yaml (75 operations)
 PASS  [negative] Client login: invalid body [HTTP 400]
 PASS  [positive] Client login: valid body [HTTP 200]
 PASS  [negative] Staff login: invalid body [HTTP 400]
