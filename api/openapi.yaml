@@ -1,10 +1,13 @@
 openapi: 3.0.3
 info:
   title: Veterinary Clinic API
-  version: 0.1.0
+  version: 0.2.0
   description: >-
-    API-first contract based on approved SRS v0.1 and ADD-001. This specification
+    API-first contract based on approved SRS v0.1, ADD-001 and ADD-002. This specification
     models only approved behavior; unresolved OPEN/DEP decisions are not filled in.
+    ADD-002 adds full CRUD for domain entities: physical deletion only for records
+    created by mistake and without history, annulment for referrals, and refusal (409)
+    for medical records, which are marked as erroneous instead (REQ-F-060).
 servers:
   - url: https://api.example.invalid
 tags:
@@ -101,6 +104,7 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/Session'}
+        '400': {$ref: '#/components/responses/BadRequest'}
         '401': {$ref: '#/components/responses/Unauthorized'}
         '429': {$ref: '#/components/responses/RateLimited'}
         default: {$ref: '#/components/responses/UnexpectedError'}
@@ -123,8 +127,38 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/Session'}
+        '400': {$ref: '#/components/responses/BadRequest'}
         '401': {$ref: '#/components/responses/Unauthorized'}
         '429': {$ref: '#/components/responses/RateLimited'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /auth/sessions/current:
+    get:
+      tags: [Доступ]
+      operationId: getCurrentSession
+      summary: Отримати дані поточного сеансу
+      description: Повертає ідентифікатор і роль користувача поточного токена без пароля та секретів.
+      x-requirement-ids: [REQ-F-075, REQ-NF-012]
+      security: [{ClientAuth: []}, {StaffAuth: []}]
+      responses:
+        '200':
+          description: Поточний сеанс
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/CurrentSession'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+    delete:
+      tags: [Доступ]
+      operationId: deleteCurrentSession
+      summary: Вийти із системи
+      description: Завершує лише поточний сеанс; після цього той самий токен не надає доступу. Інші сеанси користувача не завершуються.
+      x-requirement-ids: [REQ-F-075]
+      security: [{ClientAuth: []}, {StaffAuth: []}]
+      responses:
+        '204': {description: Сеанс завершено}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /auth/client-password-resets:
     post:
@@ -182,6 +216,8 @@ paths:
       responses:
         '204': {description: Номер змінено; попередні сеанси завершено}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
         '409': {$ref: '#/components/responses/Conflict'}
         '502': {$ref: '#/components/responses/ExternalServiceError'}
         default: {$ref: '#/components/responses/UnexpectedError'}
@@ -205,6 +241,8 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/CodeRequestResult'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
         '502': {$ref: '#/components/responses/ExternalServiceError'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /clients:
@@ -227,6 +265,8 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/ClientProfile'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
         '409': {$ref: '#/components/responses/Conflict'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /clients/{clientId}:
@@ -245,6 +285,8 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ClientProfile'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
         default: {$ref: '#/components/responses/UnexpectedError'}
     patch:
@@ -265,8 +307,27 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ClientProfile'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+    delete:
+      tags: [Клієнти]
+      operationId: deleteClientProfile
+      summary: Видалити помилково створений профіль клієнта
+      description: Лише адміністратор, з обов’язковою причиною. Дозволено, якщо пароль ще не встановлено і з профілем не пов’язано жодної тварини (включно з колишньою опікою) та жодного прийому. Видалення анулює чинне одноразове посилання, звільняє номер телефону й зберігає слід видалення без імені та телефону. Інакше профіль не змінюється й повертається перелік перешкод.
+      x-requirement-ids: [REQ-F-076, REQ-F-086]
+      security: [{StaffAuth: []}]
+      parameters:
+        - {$ref: '#/components/parameters/DeletionReason'}
+      responses:
+        '204': {description: Профіль видалено; номер звільнено}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/DeletionBlocked'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /clients/{clientId}/invitations:
     parameters:
@@ -284,6 +345,8 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PasswordLink'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /auth/client-invitations/confirmation:
@@ -324,6 +387,8 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/RecoveryReview'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /client-access-recoveries/{recoveryId}/phone-confirmation:
     parameters:
@@ -347,6 +412,7 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/RecoveryReview'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '404': {$ref: '#/components/responses/NotFound'}
         '410': {$ref: '#/components/responses/ExpiredCode'}
         '502': {$ref: '#/components/responses/ExternalServiceError'}
         default: {$ref: '#/components/responses/UnexpectedError'}
@@ -372,6 +438,7 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/CodeRequestResult'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '404': {$ref: '#/components/responses/NotFound'}
         '410': {$ref: '#/components/responses/ExpiredLink'}
         '502': {$ref: '#/components/responses/ExternalServiceError'}
         default: {$ref: '#/components/responses/UnexpectedError'}
@@ -393,10 +460,31 @@ paths:
       responses:
         '204': {description: Доступ відновлено; попередні сеанси завершено}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '404': {$ref: '#/components/responses/NotFound'}
         '409': {$ref: '#/components/responses/Conflict'}
         '410': {$ref: '#/components/responses/ExpiredLink'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /staff-accounts:
+    get:
+      tags: [Працівники]
+      operationId: listStaffAccounts
+      summary: Отримати облікові записи працівників
+      description: Лише адміністратор. Повертає логін, роль і стан блокування без паролів і одноразових посилань.
+      x-requirement-ids: [REQ-F-077]
+      security: [{StaffAuth: []}]
+      parameters:
+        - {name: role, in: query, required: false, schema: {type: string, enum: [administrator, veterinarian]}}
+        - {name: blocked, in: query, required: false, schema: {type: boolean}}
+      responses:
+        '200':
+          description: Облікові записи працівників
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/StaffAccountList'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
     post:
       tags: [Працівники]
       operationId: createStaffAccount
@@ -416,11 +504,30 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/StaffAccount'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
         '409': {$ref: '#/components/responses/Conflict'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /staff-accounts/{staffId}:
     parameters:
       - {$ref: '#/components/parameters/StaffId'}
+    get:
+      tags: [Працівники]
+      operationId: getStaffAccount
+      summary: Отримати обліковий запис працівника
+      description: Адміністратор переглядає будь-який запис; інший працівник — лише власний. Паролі й одноразові посилання не повертаються.
+      x-requirement-ids: [REQ-F-077, REQ-NF-015]
+      security: [{StaffAuth: []}]
+      responses:
+        '200':
+          description: Обліковий запис працівника
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/StaffAccount'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
     patch:
       tags: [Працівники]
       operationId: changeStaffAccountAvailability
@@ -440,8 +547,26 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/StaffAccount'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+    delete:
+      tags: [Працівники]
+      operationId: deleteStaffAccount
+      summary: Видалити помилково створений обліковий запис працівника
+      description: Лише адміністратор, з обов’язковою причиною, для запису іншого працівника. Дозволено, якщо пароль ще не встановлено і з записом не пов’язано розкладу, прийомів, медичних записів, рекомендацій чи направлень. Чинне посилання анулюється, логін звільняється, зберігається слід видалення. Інакше використовується блокування за REQ-F-015.
+      x-requirement-ids: [REQ-F-078, REQ-F-086, REQ-F-017]
+      security: [{StaffAuth: []}]
+      parameters:
+        - {$ref: '#/components/parameters/DeletionReason'}
+      responses:
+        '204': {description: Обліковий запис видалено; логін звільнено}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/DeletionBlocked'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /staff-accounts/{staffId}/password-links:
     parameters:
@@ -459,6 +584,8 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PasswordLink'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /auth/staff-password-links/confirmation:
@@ -505,6 +632,8 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/ClientSearchResults'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /pets:
     get:
@@ -530,6 +659,8 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/PetSearchResults'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
         default: {$ref: '#/components/responses/UnexpectedError'}
     post:
       tags: [Тварини]
@@ -550,6 +681,8 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/Pet'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
         '409': {$ref: '#/components/responses/Conflict'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /pets/{petId}:
@@ -568,6 +701,8 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/Pet'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
         default: {$ref: '#/components/responses/UnexpectedError'}
     patch:
@@ -590,11 +725,50 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/Pet'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+    delete:
+      tags: [Тварини]
+      operationId: deletePet
+      summary: Видалити помилково створену картку тварини
+      description: Лише адміністратор, з обов’язковою причиною. Дозволено, якщо в картки немає прийомів будь-якого статусу, медичних записів, рекомендацій, направлень, позначок смерті чи припинення опіки та розглянутих пропозицій змін. Нерозглянута пропозиція видаляється разом із карткою, номер мікрочипа звільняється, зберігається слід видалення. Для реальних подій використовуються позначки смерті та припинення опіки (REQ-F-030).
+      x-requirement-ids: [REQ-F-079, REQ-F-086, REQ-F-031]
+      security: [{StaffAuth: []}]
+      parameters:
+        - {$ref: '#/components/parameters/DeletionReason'}
+      responses:
+        '204': {description: Картку видалено; мікрочип звільнено}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/DeletionBlocked'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /pets/{petId}/change-proposals:
     parameters:
       - {$ref: '#/components/parameters/PetId'}
+    get:
+      tags: [Тварини]
+      operationId: listPetChangeProposals
+      summary: Отримати пропозиції змін картки
+      description: Клієнт із правом на картку та працівники перевірки бачать подані пропозиції окремо від чинних даних, включно з рішенням і причиною відхилення.
+      x-requirement-ids: [REQ-F-026, REQ-F-080]
+      security: [{ClientAuth: []}, {StaffAuth: []}]
+      parameters:
+        - {name: pending, in: query, required: false, schema: {type: boolean}, description: true — лише нерозглянуті пропозиції.}
+      responses:
+        '200':
+          description: Пропозиції змін картки
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PetChangeProposalList'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
     post:
       tags: [Тварини]
       operationId: createPetChangeProposal
@@ -613,8 +787,78 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PetChangeProposal'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
         '409': {$ref: '#/components/responses/Conflict'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /pets/{petId}/change-proposals/{proposalId}:
+    parameters:
+      - {$ref: '#/components/parameters/PetId'}
+      - {$ref: '#/components/parameters/ProposalId'}
+    get:
+      tags: [Тварини]
+      operationId: getPetChangeProposal
+      summary: Отримати пропозицію змін
+      description: Доступ мають клієнт із правом на картку та працівники перевірки.
+      x-requirement-ids: [REQ-F-026, REQ-F-080]
+      security: [{ClientAuth: []}, {StaffAuth: []}]
+      responses:
+        '200':
+          description: Пропозиція змін
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PetChangeProposal'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+    patch:
+      tags: [Тварини]
+      operationId: updatePetChangeProposal
+      summary: Змінити власну нерозглянуту пропозицію
+      description: Лише автор-клієнт і лише до рішення працівника; зберігається перша успішно збережена дія. Чинні дані картки не змінюються до рішення.
+      x-requirement-ids: [REQ-F-080, REQ-F-029]
+      security: [{ClientAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PetChangeProposalInput'}
+      responses:
+        '200':
+          description: Пропозицію змінено
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PetChangeProposal'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409':
+          description: Рішення вже збережено; повертається актуальний стан пропозиції без змін
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PetChangeProposal'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+    delete:
+      tags: [Тварини]
+      operationId: withdrawPetChangeProposal
+      summary: Відкликати власну нерозглянуту пропозицію
+      description: Лише автор-клієнт і лише до рішення працівника. Відкликана пропозиція видаляється, позначка потреби перевірки знімається.
+      x-requirement-ids: [REQ-F-080, REQ-F-029]
+      security: [{ClientAuth: []}]
+      responses:
+        '204': {description: Пропозицію відкликано}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409':
+          description: Рішення вже збережено; повертається актуальний стан пропозиції без змін
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PetChangeProposal'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /pets/{petId}/change-proposals/{proposalId}/decision:
     parameters:
@@ -639,6 +883,8 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/PetChangeProposal'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
         '409':
           description: Інший працівник уже зберіг рішення; повертається актуальний стан пропозиції без перезапису
@@ -670,6 +916,8 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/Pet'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /pets/{petId}/deaths:
@@ -694,6 +942,9 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/AnimalEvent'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /pets/{petId}/ownership-closures:
     parameters:
@@ -717,6 +968,9 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/AnimalEvent'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /pets/{petId}/deaths/correction:
     parameters:
@@ -740,6 +994,9 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/AnimalEvent'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /pets/{petId}/ownership-closures/correction:
     parameters:
@@ -763,6 +1020,9 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/AnimalEvent'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /staff-schedules/{staffId}/{date}:
     parameters:
@@ -771,6 +1031,24 @@ paths:
         in: path
         required: true
         schema: {type: string, format: date}
+    get:
+      tags: [Розклад і прийоми]
+      operationId: getStaffScheduleForDate
+      summary: Отримати робочі інтервали на дату
+      description: Адміністратор переглядає розклад будь-якого лікаря; ветеринар — лише власний. Якщо розклад на дату не задано, повертається 404.
+      x-requirement-ids: [REQ-F-036, REQ-F-081]
+      security: [{StaffAuth: []}]
+      responses:
+        '200':
+          description: Розклад на дату
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/WorkIntervals'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
     put:
       tags: [Розклад і прийоми]
       operationId: setStaffScheduleForDate
@@ -792,6 +1070,9 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/WorkIntervals'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
         '409':
           description: Наявний майбутній підтверджений прийом не вміщується; розклад не змінено
           content:
@@ -799,6 +1080,27 @@ paths:
               schema: {$ref: '#/components/schemas/ScheduleConflict'}
               examples:
                 blockingAppointment: {value: {code: schedule_conflict, message: Інтервал не вміщує підтверджений прийом., appointmentIds: [apt-204]}}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+    delete:
+      tags: [Розклад і прийоми]
+      operationId: deleteStaffScheduleForDate
+      summary: Видалити розклад на дату
+      description: Лише адміністратор. Дозволено, якщо на цю дату немає підтверджених прийомів лікаря, що ще не почалися; історичні прийоми не блокують видалення. Інакше розклад не змінюється й повертаються перешкоджальні прийоми.
+      x-requirement-ids: [REQ-F-081, REQ-F-038]
+      security: [{StaffAuth: []}]
+      responses:
+        '204': {description: Розклад на дату видалено}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409':
+          description: На дату є майбутній підтверджений прийом; розклад не змінено
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ScheduleConflict'}
+              examples:
+                blockingAppointment: {value: {code: schedule_conflict, message: На дату є підтверджений прийом., appointmentIds: [apt-204]}}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /appointment-slots:
     get:
@@ -818,6 +1120,8 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/AppointmentSlotList'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /appointments:
     get:
@@ -838,6 +1142,9 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/AppointmentList'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
         default: {$ref: '#/components/responses/UnexpectedError'}
     post:
       tags: [Розклад і прийоми]
@@ -863,6 +1170,8 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/Appointment'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
         '409': {$ref: '#/components/responses/Conflict'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /appointments/{appointmentId}:
@@ -881,6 +1190,8 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/Appointment'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
         default: {$ref: '#/components/responses/UnexpectedError'}
     patch:
@@ -902,7 +1213,27 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/Appointment'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
         '409': {$ref: '#/components/responses/Conflict'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+    delete:
+      tags: [Розклад і прийоми]
+      operationId: deleteAppointment
+      summary: Видалити помилково внесений прийом
+      description: Лише адміністратор, з обов’язковою причиною, для прийому, створеного адміністратором. Дозволено, якщо статус «Підтверджено», немає медичного запису й історії змін статусу, а звичайний прийом ще не почався. Пов’язана клінічна рекомендація знову очікує запису, якщо це дозволяє стан тварини; зберігається слід видалення. Інакше використовуються скасування та статуси REQ-F-045–REQ-F-048.
+      x-requirement-ids: [REQ-F-082, REQ-F-086]
+      security: [{StaffAuth: []}]
+      parameters:
+        - {$ref: '#/components/parameters/DeletionReason'}
+      responses:
+        '204': {description: Прийом видалено}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/DeletionBlocked'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /appointments/{appointmentId}/cancellation:
     parameters:
@@ -920,7 +1251,9 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/Appointment'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
         '409': {$ref: '#/components/responses/Conflict'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /appointments/{appointmentId}/status:
@@ -945,7 +1278,9 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/Appointment'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
         '409': {$ref: '#/components/responses/Conflict'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /appointments/{appointmentId}/medical-records:
@@ -970,7 +1305,9 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/MedicalRecord'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /pets/{petId}/medical-records:
     parameters:
@@ -988,7 +1325,9 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/MedicalRecordList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
         default: {$ref: '#/components/responses/UnexpectedError'}
     post:
       tags: [Медична історія]
@@ -1009,6 +1348,9 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/MedicalRecord'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /medical-records/{recordId}:
     parameters:
@@ -1026,6 +1368,7 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/MedicalRecord'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
         default: {$ref: '#/components/responses/UnexpectedError'}
@@ -1051,8 +1394,29 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/MedicalRecord'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
         '413': {$ref: '#/components/responses/PayloadTooLarge'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+    delete:
+      tags: [Медична історія]
+      operationId: deleteMedicalRecord
+      summary: Видалити медичний запис (не дозволено)
+      description: Фізичне видалення медичного запису заборонене для будь-якої ролі. Сервер завжди повертає 409 з поясненням, що запис позначається помилковим із причиною через PATCH /medical-records/{recordId} (REQ-F-060). Запис, версії та вкладення не змінюються.
+      x-requirement-ids: [REQ-F-083, REQ-F-060]
+      security: [{ClientAuth: []}, {StaffAuth: []}]
+      responses:
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409':
+          description: Медичний запис не видаляється; використайте позначку «помилковий»
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ApiError'}
+              examples:
+                forbiddenDeletion: {value: {code: medical_record_deletion_forbidden, message: 'Медичний запис не видаляється. Позначте його помилковим із причиною.', details: {alternative: 'PATCH /medical-records/{recordId}', requirement: REQ-F-060}}}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /medical-records/{recordId}/versions/{versionId}/attachments/{attachmentId}:
     parameters:
@@ -1073,6 +1437,7 @@ paths:
             application/pdf: {schema: {type: string, format: binary}}
             image/jpeg: {schema: {type: string, format: binary}}
             image/png: {schema: {type: string, format: binary}}
+        '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
         default: {$ref: '#/components/responses/UnexpectedError'}
@@ -1101,11 +1466,31 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/MedicalRecord'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
         '413': {$ref: '#/components/responses/PayloadTooLarge'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /pets/{petId}/referrals:
     parameters:
       - {$ref: '#/components/parameters/PetId'}
+    get:
+      tags: [Направлення]
+      operationId: listPetReferrals
+      summary: Переглянути направлення тварини
+      description: Клієнт із правом на картку та ветеринари бачать направлення, включно з анульованими (з позначкою й причиною). Адміністратору подання недоступне.
+      x-requirement-ids: [REQ-F-065, REQ-F-084, REQ-F-054]
+      security: [{ClientAuth: []}, {StaffAuth: []}]
+      responses:
+        '200':
+          description: Направлення тварини
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ReferralList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
     post:
       tags: [Направлення]
       operationId: createReferral
@@ -1125,6 +1510,70 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/Referral'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+  /referrals/{referralId}:
+    parameters:
+      - {$ref: '#/components/parameters/ReferralId'}
+    get:
+      tags: [Направлення]
+      operationId: getReferral
+      summary: Отримати направлення
+      description: Доступ мають клієнт із правом на картку та ветеринари; адміністратор не отримує направлення. Анульоване направлення повертається з позначкою та причиною.
+      x-requirement-ids: [REQ-F-065, REQ-F-084, REQ-F-054]
+      security: [{ClientAuth: []}, {StaffAuth: []}]
+      responses:
+        '200':
+          description: Направлення
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Referral'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+    patch:
+      tags: [Направлення]
+      operationId: reviseReferral
+      summary: Виправити направлення
+      description: Лише автор-ветеринар, з обов’язковою причиною; попередні значення зберігаються в історії виправлень. Анульоване направлення не змінюється.
+      x-requirement-ids: [REQ-F-084]
+      security: [{StaffAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ReferralRevision'}
+      responses:
+        '200':
+          description: Направлення виправлено
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Referral'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+    delete:
+      tags: [Направлення]
+      operationId: annulReferral
+      summary: Анулювати направлення
+      description: Лише автор-ветеринар, з обов’язковою причиною. Направлення не знищується фізично, а лишається в історії з позначкою анульованого й причиною та більше не змінюється. Повторне анулювання повертає 409.
+      x-requirement-ids: [REQ-F-084]
+      security: [{StaffAuth: []}]
+      parameters:
+        - {$ref: '#/components/parameters/DeletionReason'}
+      responses:
+        '204': {description: Направлення анульовано й збережено в історії}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /recommendations:
     get:
@@ -1140,6 +1589,7 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/WaitingRecommendationList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
         default: {$ref: '#/components/responses/UnexpectedError'}
     post:
@@ -1164,6 +1614,8 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/Recommendation'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /pets/{petId}/recommendations:
     parameters:
@@ -1181,11 +1633,47 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/RecommendationList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /recommendations/{recommendationId}:
     parameters:
       - {$ref: '#/components/parameters/RecommendationId'}
+    get:
+      tags: [Рекомендації]
+      operationId: getRecommendation
+      summary: Отримати рекомендацію
+      description: Доступ мають ті самі ролі, що й до рекомендацій тварини (REQ-F-064, REQ-F-072) — клієнт із правом на картку, включно з домашніми інструкціями, та ветеринари. Адміністратор отримує лише організаційні поля через список очікування.
+      x-requirement-ids: [REQ-F-085, REQ-F-064, REQ-F-072]
+      security: [{ClientAuth: []}, {StaffAuth: []}]
+      responses:
+        '200':
+          description: Рекомендація з історією версій
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Recommendation'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
+    delete:
+      tags: [Рекомендації]
+      operationId: deleteRecommendation
+      summary: Видалити помилково створену рекомендацію
+      description: Лише автор-ветеринар, з обов’язковою причиною. Дозволено, якщо рекомендація не скасована, не має виправлених версій і жодного пов’язаного прийому; зберігається слід видалення. Інакше використовується скасування за REQ-F-071.
+      x-requirement-ids: [REQ-F-085, REQ-F-086, REQ-F-071]
+      security: [{StaffAuth: []}]
+      parameters:
+        - {$ref: '#/components/parameters/DeletionReason'}
+      responses:
+        '204': {description: Рекомендацію видалено}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/DeletionBlocked'}
+        default: {$ref: '#/components/responses/UnexpectedError'}
     patch:
       tags: [Рекомендації]
       operationId: reviseRecommendation
@@ -1205,7 +1693,9 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/Recommendation'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
         '409': {$ref: '#/components/responses/Conflict'}
         default: {$ref: '#/components/responses/UnexpectedError'}
   /recommendations/{recommendationId}/cancellation:
@@ -1230,7 +1720,9 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/Recommendation'}
         '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
         default: {$ref: '#/components/responses/UnexpectedError'}
 components:
   securitySchemes:
@@ -1253,6 +1745,13 @@ components:
     AttachmentId: {name: attachmentId, in: path, required: true, schema: {type: string}}
     RecommendationId: {name: recommendationId, in: path, required: true, schema: {type: string}}
     RecoveryId: {name: recoveryId, in: path, required: true, schema: {type: string}}
+    ReferralId: {name: referralId, in: path, required: true, schema: {type: string}}
+    DeletionReason:
+      name: reason
+      in: query
+      required: true
+      description: Обов’язкова причина видалення або анулювання; зберігається в сліді видалення (REQ-F-086).
+      schema: {type: string, minLength: 1, maxLength: 500}
   responses:
     UnexpectedError:
       description: Непередбачена помилка API
@@ -1292,6 +1791,13 @@ components:
           schema: {$ref: '#/components/schemas/ApiError'}
           examples:
             conflict: {value: {code: conflict, message: Операцію неможливо виконати для поточного стану.}}
+    DeletionBlocked:
+      description: Запис має історію або пов’язані дані; фізичне видалення не виконано, запис не змінено
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ApiError'}
+          examples:
+            hasHistory: {value: {code: deletion_blocked, message: 'Запис має історію і не може бути видалений.', details: {blockingRelations: [pets, appointments]}}}
     RateLimited:
       description: Тимчасове блокування входу після повторних помилок
       content:
@@ -1405,6 +1911,13 @@ components:
       properties:
         accessToken: {type: string}
         tokenType: {type: string, enum: [Bearer]}
+    CurrentSession:
+      type: object
+      required: [userId, role]
+      properties:
+        userId: {type: string}
+        role: {type: string, enum: [client, administrator, veterinarian]}
+        idleTimeoutMinutes: {type: integer, description: 'Строк бездіяльності за REQ-NF-012: 30 для працівника, 1440 для клієнта.'}
     ClientProfileInput:
       type: object
       required: [firstName, lastName, phone]
@@ -1505,6 +2018,13 @@ components:
         login: {type: string}
         role: {type: string, enum: [administrator, veterinarian]}
         blocked: {type: boolean}
+    StaffAccountList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/StaffAccount'}
     StaffAvailabilityChange:
       type: object
       required: [blocked]
@@ -1607,6 +2127,7 @@ components:
     Pet:
       type: object
       required: [id, name, species, sex, dataConfirmed, currentOwnerId, deceased, ownershipClosed, needsChangeReview, changeProposals]
+      example: {id: pet-41, name: Мурка, species: кішка, sex: Самка, breedUnknown: true, birthYear: 2020, microchip: '900108000000123', currentOwnerId: client-1, dataConfirmed: true, deceased: false, ownershipClosed: false, needsChangeReview: false, changeProposals: []}
       allOf:
         - oneOf:
             - required: [breed]
@@ -1668,12 +2189,20 @@ components:
     PetChangeProposal:
       type: object
       required: [id, petId, proposedData]
+      example: {id: prop-15, petId: pet-41, proposedData: {name: Мурка}, decision: null}
       properties:
         id: {type: string}
         petId: {type: string}
         proposedData: {$ref: '#/components/schemas/PetPatch'}
         decision: {type: string, enum: [approved, rejected], nullable: true}
         rejectionReason: {type: string}
+    PetChangeProposalList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/PetChangeProposal'}
     ProposalDecision:
       oneOf:
         - type: object
@@ -1718,6 +2247,7 @@ components:
     WorkIntervals:
       type: object
       required: [intervals]
+      example: {intervals: [{start: '09:00', end: '13:00'}, {start: '14:00', end: '18:00'}]}
       properties:
         intervals:
           type: array
@@ -1976,11 +2506,44 @@ components:
       allOf:
         - {$ref: '#/components/schemas/ReferralInput'}
         - type: object
-          required: [id, petId, veterinarianId]
+          required: [id, petId, veterinarianId, annulled]
           properties:
             id: {type: string}
             petId: {type: string}
             veterinarianId: {type: string}
+            annulled: {type: boolean, description: Позначка анулювання за REQ-F-084; анульоване направлення лишається в історії.}
+            annulmentReason: {type: string}
+            revisions:
+              type: array
+              description: Історія виправлень із причинами та попередніми значеннями.
+              items: {$ref: '#/components/schemas/ReferralRevisionEntry'}
+    ReferralRevision:
+      type: object
+      required: [reason]
+      minProperties: 2
+      description: Часткове виправлення з обов’язковою причиною; потрібне принаймні одне змінене поле.
+      properties:
+        reason: {type: string, minLength: 1}
+        issuedDate: {type: string, format: date}
+        prescribed: {type: string, minLength: 1}
+        direction: {type: string, enum: [аналіз, обстеження, спеціаліст, зовнішня установа]}
+        institution: {type: string, nullable: true}
+        appointmentId: {type: string, nullable: true}
+    ReferralRevisionEntry:
+      type: object
+      required: [reason, changedAt, changedBy, previousValues]
+      properties:
+        reason: {type: string}
+        changedAt: {type: string, format: date-time}
+        changedBy: {type: string}
+        previousValues: {$ref: '#/components/schemas/ReferralInput'}
+    ReferralList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/Referral'}
     RecommendationInput:
       type: object
       required: [petId, format, recommendationText]
@@ -2028,6 +2591,7 @@ components:
     Recommendation:
       type: object
       required: [id, petId, authorId, format, recommendationText, recommendedDate, canceled, createdAt, versions]
+      example: {id: rcm-1, petId: pet-41, authorId: vet-7, format: Вдома, recommendationText: Спостерігати за апетитом, recommendedDate: '2026-11-20', homeInstruction: Давати воду у вільному доступі, canceled: false, createdAt: '2026-11-10T10:00:00+02:00', versions: []}
       allOf:
         - oneOf:
             - required: [bookingGuidance]
@@ -2095,6 +2659,7 @@ components:
     WaitingRecommendationList:
       type: object
       required: [items]
+      example: {items: [{recommendationId: rcm-2, clientName: Олена Коваль, contact: '+380671234567', petName: Мурка, recommendedDate: '2026-12-01', recommendationText: Повторний огляд, bookingGuidance: Записатися до 1 грудня}]}
       properties:
         items:
           type: array
