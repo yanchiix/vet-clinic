@@ -1,7 +1,8 @@
 # Планова матриця простежуваності
 
 **Project:** Veterinary Clinic  
-**Baseline:** SRS v0.1 + ADD-001  
+**Baseline:** SRS v0.1 + ADD-001 + ADD-002 (ADD-002 — після GO на SPEC-ADDENDUM-GATE)  
+**Оновлено за ADD-002:** 14.11.2026  
 **Оновлено для етапу планування реалізації:** 17.10.2026
 
 Цей файл розширює затверджену матрицю простежуваності SRS ідентифікаторами GitHub Issues. Затверджена baseline SRS не змінюється. Наявні зв’язки REQ → AC → BDD відтворено з `spec/SRS_Vet_Clinic_v0.1.tex`; остання колонка містить заплановані GitHub Issues процесу реалізації.
@@ -84,6 +85,18 @@ Local ticket IDs and GitHub issue numbers are both shown. RELEASE-GATE G04 (#25)
 | REQ-F-072 | AC-F-072 | BDD-047 | T03 (#6), F06 (#13), VAL01 (#22), G03 (#24) |
 | REQ-F-073 | AC-F-073 | BDD-049 | T01 (#4), F02 (#9), V01 (#20) |
 | REQ-F-074 | AC-F-074 | BDD-050 | F09 (#16), V01 (#20) |
+| REQ-F-075 | AC-F-075 | BDD-052 | A02, T01 (#4), F01 (#8), VAL01 (#22), G03 (#24) |
+| REQ-F-076 | AC-F-076 | BDD-053, BDD-054 | A02, T01 (#4), F02 (#9), VAL01 (#22), G03 (#24) |
+| REQ-F-077 | AC-F-077 | — | A02, T01 (#4), F01 (#8), VAL01 (#22), G03 (#24) |
+| REQ-F-078 | AC-F-078 | BDD-055 | A02, T01 (#4), F01 (#8), VAL01 (#22), G03 (#24) |
+| REQ-F-079 | AC-F-079 | BDD-056 | A02, T02 (#5), F03 (#10), VAL01 (#22) |
+| REQ-F-080 | AC-F-080 | BDD-057 | A02, T02 (#5), F03 (#10), VAL01 (#22) |
+| REQ-F-081 | AC-F-081 | BDD-058 | A02, T03 (#6), F04 (#11), VAL01 (#22) |
+| REQ-F-082 | AC-F-082 | BDD-059 | A02, T03 (#6), F04 (#11), VAL01 (#22) |
+| REQ-F-083 | AC-F-083 | BDD-060 | A02, T04 (#7), F05 (#12), VAL01 (#22), G03 (#24) |
+| REQ-F-084 | AC-F-084 | BDD-061 | A02, T03 (#6), F06 (#13), VAL01 (#22) |
+| REQ-F-085 | AC-F-085 | BDD-062 | A02, T03 (#6), F06 (#13), VAL01 (#22), G03 (#24) |
+| REQ-F-086 | AC-F-086 | BDD-053, BDD-056, BDD-059, BDD-062 | A02, T01 (#4), T02 (#5), T03 (#6), F01 (#8), F02 (#9), F03 (#10), F04 (#11), F06 (#13), G03 (#24) |
 | REQ-NF-001 | AC-NF-001 | — | F10 (#17), V01 (#20), VAL01 (#22) |
 | REQ-NF-002 | AC-NF-002 | — | F10 (#17), V01 (#20), VAL01 (#22) |
 | REQ-NF-003 | AC-NF-003 | BDD-022, BDD-036 | T03 (#6), F04 (#11), V01 (#20) |
@@ -114,8 +127,31 @@ Local ticket IDs and GitHub issue numbers are both shown. RELEASE-GATE G04 (#25)
 - G02 PLAN-GATE (#23) is not passed by this file alone; it also requires the completed D02 planning package and human GO/REVISE decision.
 - G04 RELEASE-GATE (#25) is a release-wide control point and is not duplicated in all 95 rows.
 
+## ADD-002 (14.11.2026)
+
+- ADD-002 adds **12** requirements REQ-F-075–REQ-F-086 with AC-F-075–AC-F-086 and BDD-052–BDD-062; baseline IDs are not renumbered (REQ-DP-005). Total with ADD-002: **107** requirements.
+- A02 is the ADD-002 ticket; its GitHub Issue number is assigned when the Issue is created (ticket text: [ADD-002, розділ 10](../../spec/SRS_Vet_Clinic_v0.1_addendum_002.md#10-тікет-a02)).
+- ADD-002 is in force only after Human GO on SPEC-ADDENDUM-GATE.
+
+### ADD-002: REQ → OpenAPI → smoke-сценарії
+
+| REQ-ID | Операції `api/openapi.yaml` 0.2.0 | Smoke-сценарії `prism-smoke.ps1` |
+|---|---|---|
+| REQ-F-075 | `GET`, `DELETE /auth/sessions/current` | Current session: read / missing bearer; Logout: delete current session / missing bearer |
+| REQ-F-076 | `DELETE /clients/{clientId}` | Clients: delete mistaken profile / without reason / without bearer / by non-admin / profile with history |
+| REQ-F-077 | `GET /staff-accounts`, `GET /staff-accounts/{staffId}` | Staff: list / list with invalid role filter / read by id / read foreign record |
+| REQ-F-078 | `DELETE /staff-accounts/{staffId}` | Staff: delete mistaken account / delete activated account |
+| REQ-F-079 | `DELETE /pets/{petId}` | Pets: delete mistaken card / without reason / card with history |
+| REQ-F-080 | `GET /pets/{petId}/change-proposals`, `GET`, `PATCH`, `DELETE /pets/{petId}/change-proposals/{proposalId}` | Proposals: list / read by id / update pending / update without data / update after decision / withdraw pending / withdraw after decision |
+| REQ-F-081 | `GET`, `DELETE /staff-schedules/{staffId}/{date}` | Schedule: read for date / invalid date / delete for date / delete with booked appointment |
+| REQ-F-082 | `DELETE /appointments/{appointmentId}` | Appointments: delete mistaken entry / delete conducted appointment |
+| REQ-F-083 | `DELETE /medical-records/{recordId}` | Medical records: delete is refused |
+| REQ-F-084 | `GET /pets/{petId}/referrals`, `GET`, `PATCH`, `DELETE /referrals/{referralId}` | Referrals: list for pet / read by id / read by administrator / revise with reason / revise without reason / annul / annul twice |
+| REQ-F-085 | `GET`, `DELETE /recommendations/{recommendationId}` | Recommendations: read by id / read by administrator / delete mistaken one / delete without reason / delete booked one |
+| REQ-F-086 | Слід видалення в `DELETE` клієнта, працівника, тварини, прийому, рекомендації | Не перевіряється mock (немає API читання); перевіряється тестами backend |
+
 ## Обмежені докази перевірки API-контракту
 
-Надані результати: Redocly lint для OpenAPI 3.0.3 — VALID, 0 errors і 56 warnings; усі warnings належать до `no-required-schema-properties-undefined` у композиційних схемах з умовними `required`. Prism mock на `http://127.0.0.1:4010` пройшов 11 сценаріїв із 0 помилок (`tests/contract/prism-smoke.ps1`). Деталі й обмеження наведені в [`docs/contract-testing.md`](../contract-testing.md).
+Актуальні результати (контракт 0.2.0, 14.11.2026): Redocly lint для OpenAPI 3.0.3 — VALID, 0 errors і 56 warnings; усі warnings належать до `no-required-schema-properties-undefined` у композиційних схемах з умовними `required`. Prism smoke (`tests/contract/prism-smoke.ps1`) — 90 PASS, 0 FAIL; кожен очікуваний код задекларований у відповідній операції. Деталі й обмеження наведені в [`docs/contract-testing.md`](../contract-testing.md).
 
-Ці результати є обмеженими доказами lint/HTTP-поведінки mock для вибраних запитів. Вони не позначають вимоги реалізованими чи повністю протестованими. Зокрема, умовні обмеження композиційних схем ще не підтверджені реальним backend; HTTP 422 для некоректного тіла входу є спостереженням Prism, а не окремо задекларованою відповіддю цієї операції в OpenAPI.
+Ці результати є обмеженими доказами lint/HTTP-поведінки mock. Вони не позначають вимоги реалізованими чи повністю протестованими. Зокрема, умовні обмеження композиційних схем і умови видалення ADD-002 ще не підтверджені реальним backend; коди, що залежать від стану даних, mock повертає за заголовком `Prefer`.

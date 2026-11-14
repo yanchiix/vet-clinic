@@ -47,3 +47,48 @@ G03 Integrity Gate — окремий, ширший контрольний ет�
 - **Basis:** OpenAPI VALID (0 errors, 56 documented warnings), Prism smoke tests (14 PASS, 0 FAIL), traceability and contract-testing evidence.
 - **Accepted limitations:** limited mock coverage, unverified backend behavior, Prism-specific HTTP 422.
 - **Explicit exclusion:** This GO does not close G03 Integrity Gate and does not certify backend implementation or integrations.
+
+## Повторна оцінка після рев’ю контракту (14.11.2026)
+
+### Зауваження рев’ю
+
+05.11.2026 рецензент (викладач) переглянув API-контракт і зауважив:
+
+1. для тварини в описі контракту видно лише `POST` і `PATCH` — незрозуміло, як отримати чи видалити тварину;
+2. для всіх сутностей мають бути Create, Read, Update, Delete;
+3. тести й зведені таблиці мають відповідати тому, як написано в YAML.
+
+### Що змінено
+
+| Зауваження | Виправлення | Доказ |
+|---|---|---|
+| 1 | `GET /pets` і `GET /pets/{petId}` у YAML були; додано `DELETE /pets/{petId}`; складено повну CRUD-таблицю сутностей | [ADD-002, розділ 6.4](../spec/SRS_Vet_Clinic_v0.1_addendum_002.md#64-підсумкова-матриця-crud) |
+| 2 | ADD-002: 21 нова операція, 10 сутностей з CRUD; процеси й обчислювані ресурси без CRUD явно пояснено | [ADD-002](../spec/SRS_Vet_Clinic_v0.1_addendum_002.md), `api/openapi.yaml` 0.2.0 |
+| 3 | Smoke-тест перевіряє, що кожен очікуваний код задекларований в операції; прибрано недекларовані `422` і `401`; 69 операцій доповнено відповідями `400/401/403/404`; mock-відповіді відповідають схемам | [contract-testing.md](contract-testing.md) |
+
+### Критерії, що змінилися
+
+| № | Критерій | Було (0.1.0) | Стало (0.2.0) |
+|---:|---|---|---|
+| 2 | Виділено ресурси предметної області | PASS | PASS; додано CRUD-матрицю сутностей і перелік ресурсів-процесів |
+| 3 | Визначено URI та HTTP-методи | 46 paths, 54 operations | **49 paths, 75 operations**; Delete у 10 сутностях |
+| 4 | Описано відповіді й HTTP-коди | PASS із обмеженням lint | PASS; кожна операція декларує `400/401/403/404` за правилами ADD-002, розділ 6.2 |
+| 5 | Схеми основних ресурсів | 69 schemas | **75 schemas** |
+| 7 | Операції пов’язані з REQ-ID | PASS | PASS; нові операції пов’язані з REQ-F-075–REQ-F-086 |
+| 9 | Автоматичний валідатор | VALID, 0 errors, 56 warnings | VALID, **0 errors, 56 warnings** (без нових попереджень) |
+| 11 | Позитивні сценарії | LIMITED (вибіркові) | PASS для HTTP-контракту: **46** позитивних, щонайменше один на кожну CRUD-операцію сутностей |
+| 12 | Негативні сценарії | LIMITED | PASS для HTTP-контракту: **44** негативні (`400`, `401`, `403`, `404`, `409`) |
+| 13 | Відтворення контракту mock-сервером | 14 PASS, 0 FAIL; 422 поза контрактом | **90 PASS, 0 FAIL**; усі очікувані коди задекларовані; 0 порушень схем у відповідях |
+| 14 | Нову поведінку оформлено адендумом | PASS | PASS — ADD-002 |
+
+Обмеження з розділу «Відомі обмеження» лишаються чинними, крім пункту про HTTP 422: він більше не використовується.
+
+### Висновок повторної оцінки
+
+**READY FOR API-FIRST BASELINE 0.2.0** за умови рішення GO на SPEC-ADDENDUM-GATE для ADD-002. Висновок не означає готовність backend і не закриває G03.
+
+### Human decision (повторний API-GATE)
+
+- **Decision:** _очікує Human: GO / REVISE_
+- **Scope:** API-first baseline 0.2.0 (SRS v0.1 + ADD-001 + ADD-002)
+- **Decision maker:** Student / Project owner
